@@ -1,0 +1,75 @@
+.movie__list {
+    padding: 0 3rem 3rem 3rem;
+}
+
+.list__title {
+    font-size: 1.75rem;
+    margin: 2.5rem;
+    text-align: center;
+}
+
+.list__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+/* Untuk perangkat dengan layar kecil (ponsel) */
+@media (max-width: 576px) {
+    .cards {
+        min-width: 150px;
+        height: 250px;
+    }
+
+    .cards__img {
+        height: 200px;
+    }
+
+    .cards__overlay {
+        padding: 0.5rem;
+    }
+
+    .movie__list {
+        padding: 0.5rem;
+    }
+}
+
+/* Untuk perangkat dengan layar sedang (tablet) */
+@media (min-width: 577px) and (max-width: 768px) {
+    .cards {
+        min-width: 180px;
+        height: 300px;
+    }
+
+    .cards__img {
+        height: 250px;
+    }
+
+    .cards__overlay {
+        padding: 0.75rem;
+    }
+
+    .movie__list {
+        padding: 1rem;
+    }
+}
+
+/* Untuk perangkat dengan layar besar (desktop) */
+@media (min-width: 769px) {
+    .cards {
+        min-width: 200px;
+        height: 350px;
+    }
+
+    .cards__img {
+        height: 300px;
+    }
+
+    .cards__overlay {
+        padding: 1rem;
+    }
+
+    .movie__list {
+        padding: 1.5rem;
+    }
+}
