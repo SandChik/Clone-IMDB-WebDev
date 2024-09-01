@@ -22,12 +22,14 @@ const Home = () => {
         <Carousel
           showThumbs={false}
           autoPlay={true}
-          transitionTime={1}
+          transitionTime={500}
           infiniteLoop={true}
           showStatus={false}
           showArrows={true}
-          swipeable={true} // Memungkinkan pengguna untuk menggeser menggunakan layar sentuh
-          emulateTouch={true} // Menambahkan fitur swipe pada perangkat non-touch
+          dynamicHeight={true}
+          swipeable={true}
+          emulateTouch={true}
+          swipeScrollTolerance={5} // Tambahkan toleransi swipe
         >
           {popularMovies.map((movie) => (
             <Link

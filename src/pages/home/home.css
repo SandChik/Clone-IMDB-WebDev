@@ -1,6 +1,7 @@
 .posterImage {
     height: 600px;
     position: relative;
+    transition: transform 0.5s ease-in-out; /* Tambahkan transisi yang halus */
 }
 
 .posterImage > img {
@@ -9,6 +10,7 @@
     width: 100%;
     object-fit: cover;
     height: 100%;
+    transition: transform 0.5s ease-in-out; /* Tambahkan transisi yang halus */
 }
 
 .posterImage__overlay {
@@ -101,6 +103,6 @@
 
     .posterImage__description {
         font-size: 0.8rem;
-        width: 100%;
+        width: 100%; 
     }
 }
