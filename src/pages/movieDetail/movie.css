@@ -151,14 +151,23 @@
         font-size: 0.9rem;
     }
 }
-
 @media (max-width: 576px) {
+    .movie__poster-trailer {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .movie__posterBox {
-        width: 40%;
+        width: 100%; /* Sesuaikan lebar poster */
+        margin: auto; /* Pusatkan poster */
+        min-width: none;
+        min-height: auto;
     }
 
     .movie__trailer {
         min-height: 250px;
+        width: 100%; /* Atur lebar trailer menjadi 100% */
+        margin-bottom: 20px; /* Tambahkan margin bawah untuk spasi */
     }
 
     .movie__name {
@@ -168,8 +177,9 @@
     .movie__info span {
         font-size: 0.9rem;
     }
-
+ 
     .movie__synopsis {
         font-size: 1rem;
+
     }
 }

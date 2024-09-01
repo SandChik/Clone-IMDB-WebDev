@@ -25,9 +25,13 @@ const Home = () => {
           transitionTime={1}
           infiniteLoop={true}
           showStatus={false}
+          showArrows={true}
+          swipeable={true} // Memungkinkan pengguna untuk menggeser menggunakan layar sentuh
+          emulateTouch={true} // Menambahkan fitur swipe pada perangkat non-touch
         >
           {popularMovies.map((movie) => (
             <Link
+              key={movie.id}
               style={{ textDecoration: "none", color: "white" }}
               to={`/movie/${movie.id}`}
             >
@@ -36,6 +40,7 @@ const Home = () => {
                   src={`https://image.tmdb.org/t/p/original${
                     movie && movie.backdrop_path
                   }`}
+                  alt={movie.original_title}
                 />
               </div>
               <div className="posterImage__overlay">

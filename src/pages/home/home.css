@@ -1,26 +1,29 @@
-.posterImage{
+.posterImage {
     height: 600px;
+    position: relative;
 }
 
 .posterImage > img {
     margin: auto;
     display: block;
     width: 100%;
+    object-fit: cover;
+    height: 100%;
 }
 
 .posterImage__overlay {
     position: absolute;
-    padding: 5rem;
-    bottom: 0px;
+    padding: 2rem;
+    bottom: 0;
     height: 70%;
     display: flex;
     flex-direction: column;
     width: 100%;
     justify-content: flex-end;
     align-items: flex-start;
-    background-image: linear-gradient(rgb(0,0,0,0), rgb(0,0,0,1));
+    background-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
     opacity: 1;
-    transition: opacity .3s;
+    transition: opacity 0.3s ease-in-out;
 }   
 
 .posterImage__overlay:hover {
@@ -29,18 +32,18 @@
 
 .posterImage__title {
     font-weight: 900;
-    font-size: 4rem;
+    font-size: 3rem;
     margin-bottom: 0.4rem;
     text-align: left;
 }
 
 .posterImage__runtime {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
 .posterImage__rating {
-    margin-left: 3rem;
+    margin-left: 1rem;
 }
 
 .posterImage__description {
@@ -49,5 +52,55 @@
     margin-bottom: 0.25rem;
     display: flex;
     text-align: left;
-    width: 50%;
+    width: 80%;
+}
+
+.carousel .control-prev.control-arrow,
+.carousel .control-next.control-arrow {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 50px;
+    height: 50px;
+}
+
+@media (max-width: 768px) {
+    .posterImage {
+        height: 400px;
+    }
+
+    .posterImage__overlay {
+        padding: 1rem;
+        height: 100%;
+    }
+
+    .posterImage__title {
+        font-size: 2rem;
+    }
+
+    .posterImage__runtime {
+        font-size: 1.2rem;
+    }
+
+    .posterImage__description {
+        font-size: 0.9rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .posterImage {
+        height: 300px;
+    }
+
+    .posterImage__title {
+        font-size: 1.5rem;
+    }
+
+    .posterImage__runtime {
+        font-size: 1rem;
+    }
+
+    .posterImage__description {
+        font-size: 0.8rem;
+        width: 100%;
+    }
 }
