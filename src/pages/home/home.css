@@ -1,7 +1,7 @@
 .posterImage {
     height: 600px;
     position: relative;
-    transition: transform 0.5s ease-in-out; /* Tambahkan transisi yang halus */
+    transition: transform 0.5s ease-in-out;
 }
 
 .posterImage > img {
@@ -10,7 +10,7 @@
     width: 100%;
     object-fit: cover;
     height: 100%;
-    transition: transform 0.5s ease-in-out; /* Tambahkan transisi yang halus */
+    transition: transform 0.5s ease-in-out;
 }
 
 .posterImage__overlay {
@@ -20,41 +20,59 @@
     height: 70%;
     display: flex;
     flex-direction: column;
-    width: 100%;
     justify-content: flex-end;
     align-items: flex-start;
+    width: 100%;
     background-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
     opacity: 1;
     transition: opacity 0.3s ease-in-out;
-}   
-
-.posterImage__overlay:hover {
-    opacity: 1;
 }
 
 .posterImage__title {
     font-weight: 900;
     font-size: 3rem;
-    margin-bottom: 0.4rem;
     text-align: left;
 }
 
 .posterImage__runtime {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
 }
 
 .posterImage__rating {
-    margin-left: 1rem;
+    font-size: 1.5rem;
+    margin-top: 0.5rem; /* Tambahkan jarak di bawah bintang */
+    display: flex;
+    align-items: center;
 }
 
 .posterImage__description {
     font-style: italic;
     font-size: 1rem;
-    margin-bottom: 0.25rem;
+    margin-top: 0.5rem; /* Tambahkan jarak di atas deskripsi */
     display: flex;
     text-align: left;
     width: 80%;
+}
+
+.movie__list {
+    display: flex;
+    overflow-x: scroll;
+    padding: 1rem;
+    scroll-behavior: smooth;
+}
+
+.movie__list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.movie__list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+}
+
+.list__cards {
+    display: flex;
+    flex-direction: row;
 }
 
 .carousel .control-prev.control-arrow,
@@ -79,11 +97,18 @@
     }
 
     .posterImage__runtime {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .posterImage__rating {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .posterImage__description {
-        font-size: 0.9rem;
+        font-size: 1rem;
+        margin-top: 0.5rem;
         width: 100%;
     }
 }
@@ -98,11 +123,46 @@
     }
 
     .posterImage__runtime {
-        font-size: 1rem;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .posterImage__rating {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .posterImage__description {
-        font-size: 0.8rem;
+        font-size: 1rem;
+        margin-top: 0.5rem;
         width: 100%; 
     }
+}
+
+.list__title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-left: 1rem;
+}
+
+.movie__list {
+    display: flex;
+    overflow-x: scroll;
+    padding: 1rem;
+    scroll-behavior: smooth;
+}
+
+.movie__list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.movie__list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+}
+
+.list__cards {
+    display: flex;
+    flex-direction: row;
 }

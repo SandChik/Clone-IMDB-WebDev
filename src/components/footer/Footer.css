@@ -1,0 +1,75 @@
+.footer {
+  background: #000;
+  padding: 50px 0;
+  text-align: center;
+  color: gray;
+  font-family: 'Play', sans-serif;
+}
+
+.footer__social-icons {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 2px solid #555;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.footer__title {
+  color: white;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.social-icons a {
+  color: gray;
+  font-size: 1.5em;
+  margin: 0 15px;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #FFD700; /* Warna emas saat hover */
+}
+
+.footer__links ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.footer__links ul li {
+  margin: 0 15px;
+}
+
+.footer__links ul li a {
+  color: gray;
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.3s ease;
+}
+
+.footer__links ul li a:hover {
+  color: #FFD700;
+}
+
+.footer__copyright {
+  color: gray;
+  font-size: 0.8em;
+}
+
+@media (max-width: 768px) {
+  .social-icons a {
+    font-size: 1.5em;
+    margin: 0 10px;
+  }
+
+  .footer__links ul {
+    flex-direction: column;
+  }
+
+  .footer__links ul li {
+    margin: 10px 0;
+  }
+}

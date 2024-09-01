@@ -1,10 +1,11 @@
-import './App.css';
+import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from './components/header/Header';
-import Home from './pages/home/home';
-import MovieList from './components/movieList/movieList';
-import Movie from './pages/movieDetail/movie';
-import React from 'react';
+import Header from "./components/header/Header";
+import Home from "./pages/home/home";
+import MovieList from "./components/movieList/movieList";
+import Movie from "./pages/movieDetail/movie";
+import Footer from "./components/footer/Footer";
+import React from "react";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="movies/:type" element={<MovieList />} />
           <Route path="/*" element={<h1>Error Page</h1>} />
         </Routes>
+        <Footer />
       </Router>
     </div>
   );

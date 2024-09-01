@@ -19,4 +19,51 @@ a:hover {
     color: #21a1f1;
 }
 
-/* Add any other global styles here */
+/* Global CSS */
+.list__title {
+    color: #FFD700;
+}
+/* Warna kuning untuk semua elemen dengan kelas card__title di seluruh aplikasi */
+.card__title {
+    color: #FFD700; /* Warna kuning */
+    font-weight: bold;
+}
+
+/* Warna kuning untuk judul poster di seluruh aplikasi */
+.posterImage__title {
+    color: #FFD700; /* Warna kuning */
+    font-weight: 900;
+}
+
+/* Warna kuning untuk bintang rating di seluruh aplikasi */
+.posterImage__rating i {
+    color: #FFD700; /* Warna kuning */
+}
+
+/* Jika ada perubahan ukuran font sesuai dengan media query, bisa ditambahkan di sini */
+@media (max-width: 768px) {
+    .card__title,
+    .posterImage__title {
+        font-size: 0.9rem;
+        color: #FFD700; /* Warna kuning tetap untuk judul pada layar kecil */
+    }
+    
+    .posterImage__rating i {
+        font-size: 1rem;
+        color: #FFD700; /* Warna kuning tetap untuk bintang pada layar kecil */
+    }
+}
+
+@media (max-width: 576px) {
+    .card__title,
+    .posterImage__title {
+        font-size: 0.8rem;
+        color: #FFD700; /* Warna kuning tetap untuk judul pada layar sangat kecil */
+    }
+    
+    .posterImage__rating i {
+        font-size: 0.9rem;
+        color: #FFD700; /* Warna kuning tetap untuk bintang pada layar sangat kecil */
+    }
+}
+

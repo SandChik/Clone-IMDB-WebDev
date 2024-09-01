@@ -27,7 +27,6 @@ const MovieList = () => {
 
   return (
     <div className="movie__list">
-      <h2 className="list__title">{(type ? type : "POPULAR").toUpperCase()}</h2>
       <div className="row list__cards">
         {movieList.map((movie) => (
           <div className="col-lg-3 col-md-4 col-sm-6 mb-4">

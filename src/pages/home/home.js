@@ -29,7 +29,7 @@ const Home = () => {
           dynamicHeight={true}
           swipeable={true}
           emulateTouch={true}
-          swipeScrollTolerance={5} // Tambahkan toleransi swipe
+          swipeScrollTolerance={5}
         >
           {popularMovies.map((movie) => (
             <Link
@@ -53,7 +53,7 @@ const Home = () => {
                   {movie ? movie.release_date : ""}
                   <span className="posterImage__rating">
                     {movie ? movie.vote_average : ""}
-                    <i className="fas fa-star" />{" "}
+                    <i className="fas fa-star" />
                   </span>
                 </div>
                 <div className="posterImage__description">
@@ -63,7 +63,13 @@ const Home = () => {
             </Link>
           ))}
         </Carousel>
-        <MovieList />
+      </div>
+      <div className="movie__list-container">
+        {" "}
+        {/* Pastikan judul tidak duplikat */}
+        <h2 className="list__title">POPULAR</h2> {/* Ini hanya muncul sekali */}
+        <MovieList />{" "}
+        {/* Di sini hanya panggil MovieList tanpa menambahkan judul lagi */}
       </div>
     </>
   );

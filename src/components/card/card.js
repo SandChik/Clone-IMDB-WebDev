@@ -33,7 +33,7 @@ const Cards = ({ movie }) => {
                 src={`https://image.tmdb.org/t/p/original${
                   movie ? movie.poster_path : ""
                 }`}
-                alt="Movie Poster"
+                alt="Movie Poster" // alt ditambahkan di sini
                 className="cards__img"
               />
             </div>
