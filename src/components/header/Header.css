@@ -1,5 +1,4 @@
-/* Header.css */
-
+/* Gaya umum */
 .header {
     display: flex;
     justify-content: space-between;
@@ -10,36 +9,41 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-  }
-  
-  .headerLeft {
+}
+
+/* Penyesuaian untuk logo */
+.header__icon {
+    width: 50px;
+    height: auto;
+    max-width: 100%;
+}
+
+/* Penyesuaian untuk menu kiri */
+.headerLeft {
     display: flex;
     align-items: center;
-  }
-  
-  .headerLeft a {
+}
+
+.headerLeft a {
     color: white;
     margin-left: 20px;
     text-decoration: none;
     font-size: 18px;
-  }
-  
-  .header__icon {
-    width: 100px;
-    margin-right: 20px;
-  }
-  
-  .headerRight {
+}
+
+/* Penyesuaian untuk bagian kanan header */
+.headerRight {
     display: flex;
     align-items: center;
-  }
-  
-  .search-bar {
+}
+
+.search-bar {
     display: flex;
     align-items: center;
-  }
-  
-  .search-bar input[type="text"] {
+}
+
+/* Gaya input search */
+.search-bar input[type="text"] {
     padding: 6px 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -47,13 +51,15 @@
     outline: none;
     width: 200px;
     transition: width 0.4s ease-in-out;
-  }
-  
-  .search-bar input[type="text"]:focus {
+}
+
+/* Gaya input search saat fokus */
+.search-bar input[type="text"]:focus {
     width: 300px;
-  }
-  
-  .search-bar button {
+}
+
+/* Gaya tombol search */
+.search-bar button {
     padding: 6px 12px;
     font-size: 16px;
     border: none;
@@ -62,9 +68,41 @@
     border-radius: 20px;
     margin-left: 10px;
     cursor: pointer;
-  }
-  
-  .search-bar button:hover {
+}
+
+.search-bar button:hover {
     background-color: #d4ac0d;
-  }
-  
+}
+
+/* Media Query untuk layar kecil (mobile) */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .headerLeft {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .headerRight {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .headerLeft a {
+        margin-left: 10px;
+        font-size: 16px;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+    }
+
+    .search-bar button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

@@ -15,7 +15,7 @@
 
 .posterImage__overlay {
     position: absolute;
-    padding: 2rem;
+    padding: 2  rem;
     bottom: 0;
     height: 70%;
     display: flex;
@@ -30,7 +30,7 @@
 
 .posterImage__title {
     font-weight: 900;
-    font-size: 3rem;
+    font-size: 1rem;
     text-align: left;
 }
 
@@ -82,6 +82,21 @@
     height: 50px;
 }
 
+.home {
+  display: flex;
+}
+
+.home__content {
+  margin-left: 200px; /* Sesuaikan dengan ukuran sidebar */
+  padding: 20px;
+  width: 100%;
+}
+
+.sidebar.collapsed + .home__content {
+  margin-left: 50px;
+}
+
+
 @media (max-width: 768px) {
     .posterImage {
         height: 400px;
@@ -93,7 +108,7 @@
     }
 
     .posterImage__title {
-        font-size: 2rem;
+        font-size: 1rem;
     }
 
     .posterImage__runtime {

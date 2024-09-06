@@ -13,7 +13,25 @@ const Home = () => {
       "https://api.themoviedb.org/3/movie/popular?api_key=4e44d9029b1270a757cddc766a1bcb63&language=en-US"
     )
       .then((res) => res.json())
-      .then((data) => setPopularMovies(data.results));
+      .then((data) => {
+        setPopularMovies(data.results);
+
+        // Cek jika tampilan adalah mobile
+        if (window.matchMedia("(max-width: 576px)").matches) {
+          // Batasi teks berdasarkan kata
+          document
+            .querySelectorAll(".posterImage__description")
+            .forEach(function (element) {
+              const maxWords = 20; // Batas maksimal kata
+              let text = element.textContent;
+              let words = text.split(" ");
+              if (words.length > maxWords) {
+                text = words.slice(0, maxWords).join(" ") + "...";
+                element.textContent = text;
+              }
+            });
+        }
+      });
   }, []);
 
   return (
@@ -65,14 +83,12 @@ const Home = () => {
         </Carousel>
       </div>
       <div className="movie__list-container">
-        {" "}
-        {/* Pastikan judul tidak duplikat */}
-        <h2 className="list__title">POPULAR</h2> {/* Ini hanya muncul sekali */}
-        <MovieList />{" "}
-        {/* Di sini hanya panggil MovieList tanpa menambahkan judul lagi */}
+        <h2 className="list__title">POPULAR</h2>
+        <MovieList />
       </div>
     </>
   );
 };
 
 export default Home;
+  
