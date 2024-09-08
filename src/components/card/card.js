@@ -33,7 +33,7 @@ const Cards = ({ movie }) => {
                 src={`https://image.tmdb.org/t/p/original${
                   movie ? movie.poster_path : ""
                 }`}
-                alt="Movie Poster" // alt ditambahkan di sini
+                alt="Movie Poster"
                 className="cards__img"
               />
             </div>
@@ -44,7 +44,7 @@ const Cards = ({ movie }) => {
               <Card.Text className="card__runtime">
                 {movie ? movie.release_date : ""}
                 <span className="card__rating">
-                  {movie ? movie.vote_average : ""}
+                  {movie ? movie.vote_average.toFixed(1) : ""}{" "}
                   <i className="fas fa-star" />
                 </span>
               </Card.Text>

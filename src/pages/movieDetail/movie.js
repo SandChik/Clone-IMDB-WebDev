@@ -95,11 +95,11 @@ const Movie = () => {
                   </span>
                 ))}
               </div>
-              <div className="movie__availability">
-                <strong>Availability:</strong> In Theaters / Streaming
-              </div>
               <div className="movie__synopsis">
                 <p>{currentMovieDetail.overview}</p>
+              </div>
+              <div className="movie__availability">
+                <strong>Availability:</strong> In Theaters / Streaming
               </div>
             </>
           )}
