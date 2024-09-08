@@ -160,24 +160,3 @@
     margin-bottom: 20px;
     padding-left: 1rem;
 }
-
-.movie__list {
-    display: flex;
-    overflow-x: scroll;
-    padding: 1rem;
-    scroll-behavior: smooth;
-}
-
-.movie__list::-webkit-scrollbar {
-    height: 8px;
-}
-
-.movie__list::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 10px;
-}
-
-.list__cards {
-    display: flex;
-    flex-direction: row;
-}

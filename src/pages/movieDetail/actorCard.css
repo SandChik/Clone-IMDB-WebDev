@@ -1,0 +1,11 @@
+.actor-card {
+  width: 150px;
+  text-align: center;
+  margin: 10px;
+}
+
+.actor-card p {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}

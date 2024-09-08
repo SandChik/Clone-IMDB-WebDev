@@ -1,186 +1,192 @@
 .movie {
-    position: relative;
-    color: white;
-    overflow: hidden;
-}
-
-.movie__background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-
-.movie__backgroundImage {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    opacity: 0.3;
+  position: relative;
+  color: white;
+  overflow: hidden;
 }
 
 .movie__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    max-width: 1200px;
-    margin: auto;
-    z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: auto;
+  z-index: 2;
 }
 
 .movie__poster-trailer {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .movie__posterBox {
-    flex: 1;
-    margin-right: 20px;
-    max-width: 400px;
+  flex: 1;
+  margin-right: 20px;
+  max-width: 400px;
 }
 
 .movie__trailer {
-    flex: 1;
-    max-width: 1000px;
-    height: 100%;
+  flex: 1;
+  max-width: 1000px;
+  height: 100%;
 }
 
 .movie__poster {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    object-fit: cover;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  object-fit: cover;
 }
 
 .movie__trailer iframe {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    min-height: 600px;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  min-height: 600px;
 }
 
 .movie__detail {
-    width: 100%;
-    text-align: left;
-    margin-top: 20px;
+  width: 100%;
+  text-align: left;
+  margin-top: 20px;
 }
 
 .movie__name {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.movie__info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .movie__info span {
-    margin-right: 20px;
-    font-size: 1.2rem;
+  margin-right: 20px;
+  font-size: 1.2rem;
 }
 
 .movie__genres {
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .movie__genre {
-    background-color: #333;
-    border-radius: 20px;
-    padding: 5px 15px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+  background-color: #333;
+  border-radius: 20px;
+  padding: 5px 15px;
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
-.movie__synopsis {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    max-width: 100%;
-    margin-top: 20px;
-    text-align: left;
+.movie__synopsis,
+.movie__availability {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.movie__actors {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.movie__rating i {
+    color: #FFD700; /* Warna kuning untuk bintang */
+}
+
+.section-title {
+  font-size: 2rem; /* Konsisten ukuran font */
+  font-weight: bold;
+  color: yellow; /* Warna kuning */
+  margin-bottom: 20px; /* Jarak antara judul dan konten */
+}
+
+.review-section {
+  margin-top: 50px;
+  margin-bottom: 50px; /* Jarak antar section */
+}
+  
+.actor-card__img {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.actor-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 @media (max-width: 768px) {
-    .movie__poster-trailer {
-        flex-direction: column;
-        align-items: center;
-    }
+  .movie__poster-trailer {
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .movie__trailer {
-        order: 1;
-        width: 100%;
-        margin-bottom: 20px;
-    }
+  .movie__posterBox {
+    width: 100%;
+  }
 
-    .movie__posterBox {
-        order: 2;
-        width: 30%;
-        margin-right: 20px;
-    }
+  .movie__trailer {
+    width: 100%;
+    min-height: 250px;
+  }
 
-    .movie__detail {
-        order: 3;
-        width: 100%;
-        margin-top: 0;
-        display: flex;
-        flex-direction: column;
-    }
+  .movie__name {
+    font-size: 1.8rem;
+  }
 
-    .movie__synopsis {
-        margin-top: 10px;
-        font-size: 1rem;
-    }
+  .movie__info span {
+    font-size: 0.9rem;
+  }
 
-    .movie__name {
-        font-size: 1.8rem;
-    }
+  .movie__synopsis {
+    font-size: 1rem;
+  }
 
-    .movie__info span {
-        font-size: 0.9rem;
-    }
+  .actor-row {
+    justify-content: space-around;
+    flex-wrap: nowrap;
+  }
 }
+
 @media (max-width: 576px) {
-    .movie__poster-trailer {
-        flex-direction: column;
-        align-items: center;
-    }
+  .movie__poster-trailer {
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .movie__posterBox {
-        width: 100%; /* Sesuaikan lebar poster */
-        margin: auto; /* Pusatkan poster */
-        min-width: none;
-        min-height: auto;
-    }
+  .movie__posterBox {
+    width: 100%;
+    margin: auto;
+    min-width: none;
+    min-height: auto;
+  }
 
-    .movie__trailer {
-        min-height: 250px;
-        width: 100%; /* Atur lebar trailer menjadi 100% */
-        margin-bottom: 20px; /* Tambahkan margin bawah untuk spasi */
-    }
+  .movie__trailer {
+    min-height: 250px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
 
-    .movie__name {
-        font-size: 1.6rem;
-    }
+  .movie__name {
+    font-size: 1.6rem;
+  }
 
-    .movie__info span {
-        font-size: 0.9rem;
-    }
- 
-    .movie__synopsis {
-        font-size: 1rem;
+  .movie__info span {
+    font-size: 0.9rem;
+  }
 
-    }
+  .movie__synopsis {
+    font-size: 1rem;
+  }
 }
 
