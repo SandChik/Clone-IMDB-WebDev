@@ -4,9 +4,6 @@ import "./reviewCard.css"; // Pastikan path file CSS sudah benar
 const ReviewCard = ({ review }) => {
   return (
     <div className="review">
-      <div className="review__user">
-        <img src="/path/to/default-avatar.png" alt="User Avatar" />
-      </div>
       <div className="review__content">
         <div className="review__title">
           {review.author} ({new Date(review.created_at).toLocaleDateString()})

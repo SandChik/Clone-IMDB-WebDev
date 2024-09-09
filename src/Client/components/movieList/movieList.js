@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./movieList.css";
 import { useParams } from "react-router-dom";
 import Cards from "../card/card";
@@ -7,15 +7,8 @@ const MovieList = () => {
   const [movieList, setMovieList] = useState([]);
   const { type } = useParams();
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
-    getData();
-  }, [type]);
-
-  const getData = () => {
+  // Gunakan useCallback untuk mendefinisikan fungsi getData agar stabil dalam memoization
+  const getData = useCallback(() => {
     fetch(
       `https://api.themoviedb.org/3/movie/${
         type ? type : "popular"
@@ -23,13 +16,17 @@ const MovieList = () => {
     )
       .then((res) => res.json())
       .then((data) => setMovieList(data.results));
-  };
+  }, [type]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]); // Tambahkan getData sebagai dependensi agar selalu dipanggil saat 'type' berubah
 
   return (
     <div className="movie__list">
-      <div className="row list__cards">
+      <div className="list__cards">
         {movieList.map((movie) => (
-          <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div className="cards" key={movie.id}>
             <Cards movie={movie} />
           </div>
         ))}

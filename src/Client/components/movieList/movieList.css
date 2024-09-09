@@ -1,5 +1,17 @@
 .movie__list {
+    display: flex;
+    overflow-x: auto; /* Tambahkan scroll horizontal */
     padding: 0 3rem 3rem 3rem;
+    scroll-behavior: smooth;
+}
+
+.movie__list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.movie__list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
 }
 
 .list__title {

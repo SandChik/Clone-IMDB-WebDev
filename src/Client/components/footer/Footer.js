@@ -9,20 +9,39 @@ const Footer = () => {
         <div className="footer__social-icons">
           <h3 className="footer__title">Follow Us on Social Media</h3>
           <div className="social-icons">
-            <a href="#">
+            <a
+              href="https://www.tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <i className="fab fa-tiktok"></i>
             </a>
-            <a href="#">
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <i className="fab fa-instagram"></i>
             </a>
-            <a href="#">
-              <i className="fab fa-x-twitter"></i>{" "}
-              {/* Ikon Twitter sudah diperbarui menjadi X */}
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fab fa-x-twitter"></i>
             </a>
-            <a href="#">
+            <a
+              href="https://www.youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <i className="fab fa-youtube"></i>
             </a>
-            <a href="#">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <i className="fab fa-facebook"></i>
             </a>
           </div>
@@ -31,22 +50,22 @@ const Footer = () => {
         <div className="footer__links">
           <ul>
             <li>
-              <a href="#">Help</a>
+              <a href="/help">Help</a>
             </li>
             <li>
-              <a href="#">Press Room</a>
+              <a href="/press-room">Press Room</a>
             </li>
             <li>
-              <a href="#">Advertising</a>
+              <a href="/advertising">Advertising</a>
             </li>
             <li>
-              <a href="#">Jobs</a>
+              <a href="/jobs">Jobs</a>
             </li>
             <li>
-              <a href="#">Conditions of Use</a>
+              <a href="/conditions">Conditions of Use</a>
             </li>
             <li>
-              <a href="#">Privacy Policy</a>
+              <a href="/privacy-policy">Privacy Policy</a>
             </li>
           </ul>
         </div>

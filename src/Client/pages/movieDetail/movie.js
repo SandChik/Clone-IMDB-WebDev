@@ -131,12 +131,14 @@ const Movie = () => {
 
           <div className="review-section">
             <h2 className="section-title">People think about this drama</h2>
-            {reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-            {/* Tambahkan form review */}
+            {/* Tambahkan container agar review bisa di-scroll */}
+            <div className="review-list">
+              {reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
             <ReviewForm onSubmit={(review) => console.log(review)} />
-          </div>
+          </div>    
         </div>
       </div>
     </div>

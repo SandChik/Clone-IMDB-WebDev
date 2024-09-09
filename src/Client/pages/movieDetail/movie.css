@@ -60,6 +60,8 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 10px;
+  text-align: left;
+  color: #FFD700;
 }
 
 .movie__info span {

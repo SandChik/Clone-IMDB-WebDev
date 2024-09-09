@@ -6,11 +6,13 @@
 .section-title {
   font-size: 2rem;
   margin-bottom: 20px;
+  margin-top: 50px;
 }
 
 .reviewForm__title {
   font-size: 1.5rem;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .reviewForm {
@@ -21,6 +23,7 @@
   max-width: 600px;
   color: white;
   margin-top: 30px;
+  margin-bottom: -300px;
   box-sizing: border-box;
 }
 

@@ -1,0 +1,71 @@
+.actor-card {
+  width: 100%;
+  max-width: 150px;
+  text-align: center;
+  margin: 10px;
+  display: flex;
+  flex-direction: column; /* Membuat elemen vertikal */
+  align-items: center;
+}
+
+.actor-card__img {
+  width: 100%; 
+  height: auto; /* Pastikan proporsi gambar tetap */
+  border-radius: 50%; /* Membuat gambar tetap bulat */
+  object-fit: cover; /* Pastikan gambar tetap tertutup penuh */
+  max-width: 150px; /* Ukuran maksimal gambar */
+  max-height: 150px; /* Tinggi maksimal gambar */
+}
+
+.actor-card p {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Responsivitas */
+@media (max-width: 1024px) {
+  .actor-card {
+    max-width: 120px;
+  }
+  
+  .actor-card__img {
+    max-width: 120px;
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .actor-card {
+    max-width: 100px;
+  }
+  
+  .actor-card__img {
+    max-width: 100px;
+    max-height: 100px;
+  }
+}
+
+@media (max-width: 576px) {
+  .actor-card {
+    max-width: 80px;
+  }
+  
+  .actor-card__img {
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .actor-card p {
+    font-size: 12px;
+  }
+}
+
+/* Untuk layar kecil, ubah elemen menjadi vertikal */
+@media (max-width: 576px) {
+  .actor-row {
+    flex-direction: column; /* Susun secara vertikal di layar kecil */
+    align-items: center;
+  }
+}
