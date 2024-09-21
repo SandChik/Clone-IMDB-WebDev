@@ -9,33 +9,29 @@ import {
   TableCell,
   TableBody,
   Typography,
-  Checkbox,
 } from "@mui/material";
 
-const Countries = () => {
-  // Array untuk header tabel
-  const tableHeaders = ["ID", "Country", "Default", "Actions"];
-
+const Genres = () => {
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
       <Typography
         variant="h4"
         sx={{ color: "white", fontWeight: "bold", mb: 3, textAlign: "center" }}
       >
-        Manage Countries
+        Manage Genres
       </Typography>
 
-      {/* Input Field dan Tombol Submit */}
+      {/* Input Fields dan Tombol Submit */}
       <Box sx={{ display: "flex", gap: 2, mb: 3, justifyContent: "center" }}>
         <TextField
-          label="Country"
+          label="Genre"
           variant="outlined"
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
             borderColor: "#00BFFF",
-            width: 200,
+            width: 300,
           }}
         />
         <Button
@@ -51,7 +47,7 @@ const Countries = () => {
         </Button>
       </Box>
 
-      {/* Tabel Country */}
+      {/* Tabel untuk Genres */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -63,54 +59,62 @@ const Countries = () => {
       >
         <TableHead>
           <TableRow>
-            {tableHeaders.map((header) => (
-              <TableCell
-                key={header}
-                align="left"
-                sx={{
-                  color: "#fff",
-                  bgcolor: "#1E90FF",
-                  fontWeight: "bold",
-                  fontSize: "1.1rem",
-                }}
-              >
-                {header}
-              </TableCell>
-            ))}
+            <TableCell
+              align="left"
+              sx={{
+                color: "#fff",
+                bgcolor: "#1E90FF",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+              }}
+            >
+              ID
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                color: "#fff",
+                bgcolor: "#1E90FF",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+              }}
+            >
+              Genre
+            </TableCell>
+            <TableCell
+              align="center"    
+              sx={{
+                color: "#fff",
+                bgcolor: "#1E90FF",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+              }}
+            >
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {[
-            { id: 1, name: "Japan" },
-            { id: 2, name: "Korea" },
-            { id: 3, name: "China" },
-          ].map((country) => (
-            <TableRow key={country.id}>
+            { id: 1, genre: "Romance" },
+            { id: 2, genre: "Drama" },
+            { id: 3, genre: "Action" },
+          ].map((genre) => (
+            <TableRow key={genre.id}>
               <TableCell
                 align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
-                {country.id}
+                {genre.id}
               </TableCell>
               <TableCell
                 align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
-                {country.name}
+                {genre.genre}
               </TableCell>
               <TableCell
-                align="left"
-                sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
-              >
-                <Checkbox
-                  sx={{
-                    color: "#1E90FF",
-                    '& .MuiSvgIcon-root': { fontSize: 28 }, // Adjust the checkbox size
-                  }}
-                />
-              </TableCell>
-              <TableCell
-                align="left"
+                align="center"
                 sx={{
                   color: "#FF69B4",
                   bgcolor: "#2a2a2a",
@@ -133,4 +137,4 @@ const Countries = () => {
   );
 };
 
-export default Countries;
+export default Genres;
