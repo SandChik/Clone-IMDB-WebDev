@@ -5,33 +5,26 @@ import ActorCard from "./actorCard";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import ReviewCard from "./reviewCard"; // Import review card
-import ReviewForm from "./reviewForm";  // Import review form
+import ReviewForm from "./reviewForm"; // Import review form
 
 const Movie = () => {
   const [currentMovieDetail, setMovie] = useState(null);
   const [actors, setActors] = useState([]);
-  const [reviews, setReviews] = useState([]); // State untuk reviews
+  const [reviews, setReviews] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
     const fetchMovieData = async () => {
-      const movieRes = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=4e44d9029b1270a757cddc766a1bcb63&language=en-US`
-      );
-      const movieData = await movieRes.json();
-      setMovie(movieData);
-
-      const actorsRes = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/credits?api_key=4e44d9029b1270a757cddc766a1bcb63`
-      );
-      const actorsData = await actorsRes.json();
-      setActors(actorsData.cast.slice(0, 10));
-
-      const reviewsRes = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/reviews?api_key=4e44d9029b1270a757cddc766a1bcb63`
-      );
-      const reviewsData = await reviewsRes.json();
-      setReviews(reviewsData.results.slice(0, 5)); // Ambil 5 review teratas
+      try {
+        const res = await fetch(`http://localhost:5000/api/dramas/${id}`);
+        const data = await res.json();
+        setMovie(data);
+        setActors(data.actors.map((actor) => actor.actor)); // Menyusun array aktor
+        // Set reviews jika ada
+        setReviews([]); // Anda bisa tambahkan pengambilan review di sini
+      } catch (error) {
+        console.error("Error fetching movie details:", error);
+      }
     };
 
     fetchMovieData();
@@ -46,6 +39,51 @@ const Movie = () => {
     return result;
   };
 
+  const renderTrailer = (linkTrailer) => {
+    if (!linkTrailer) {
+      return <p>No trailer available</p>;
+    }
+
+    // Check if the link is a YouTube video
+    if (
+      linkTrailer.includes("youtube.com") ||
+      linkTrailer.includes("youtu.be")
+    ) {
+      const youtubeId =
+        linkTrailer.split("v=")[1] || linkTrailer.split("/").pop();
+      return (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      );
+    }
+
+    // Check if the link is from Vimeo or other sources
+    if (linkTrailer.includes("vimeo.com")) {
+      const vimeoId = linkTrailer.split("/").pop();
+      return (
+        <iframe
+          src={`https://player.vimeo.com/video/${vimeoId}`}
+          frameBorder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      );
+    }
+
+    // Default to showing a clickable link for other formats
+    return (
+      <div className="trailer-link">
+        <a href={linkTrailer} target="_blank" rel="noopener noreferrer">
+          Watch Trailer
+        </a>
+      </div>
+    );
+  };
+
   return (
     <div className="movie">
       <div className="movie__content">
@@ -54,52 +92,52 @@ const Movie = () => {
             {currentMovieDetail && (
               <img
                 className="movie__poster"
-                src={`https://image.tmdb.org/t/p/original${currentMovieDetail.poster_path}`}
-                alt={currentMovieDetail.original_title}
+                src={
+                  currentMovieDetail.posterUrl ||
+                  "https://via.placeholder.com/500x750"
+                }
+                alt={currentMovieDetail.title}
               />
             )}
           </div>
           <div className="movie__trailer">
-            <iframe
-              src="https://www.youtube.com/embed/{VIDEO_ID}"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+            {currentMovieDetail &&
+              renderTrailer(currentMovieDetail.linkTrailer)}
           </div>
         </div>
 
         <div className="movie__detail">
           {currentMovieDetail && (
             <>
-              <h1 className="movie__name">
-                {currentMovieDetail.original_title}
-              </h1>
+              <h1 className="movie__name">{currentMovieDetail.title}</h1>
               <div className="movie__info">
                 <span className="movie__rating">
-                  {currentMovieDetail.vote_average.toFixed(1)}{" "}
+                  {currentMovieDetail.rating
+                    ? currentMovieDetail.rating.toFixed(1)
+                    : "N/A"}{" "}
                   <i className="fas fa-star" style={{ color: "#FFD700" }} />
                 </span>
                 <span className="movie__runtime">
-                  {currentMovieDetail.runtime} mins
+                  {currentMovieDetail.duration
+                    ? `${currentMovieDetail.duration} mins`
+                    : "N/A"}
                 </span>
                 <span className="movie__releaseDate">
-                  {currentMovieDetail.release_date}
+                  {currentMovieDetail.year}
                 </span>
               </div>
               <div className="movie__genres">
                 {currentMovieDetail.genres.map((genre) => (
-                  <span className="movie__genre" key={genre.id}>
-                    {genre.name}
+                  <span className="movie__genre" key={genre.genre.id}>
+                    {genre.genre.name}
                   </span>
                 ))}
               </div>
               <div className="movie__synopsis">
-                <p>{currentMovieDetail.overview}</p>
+                <p>{currentMovieDetail.synopsis}</p>
               </div>
               <div className="movie__availability">
-                <strong>Availability:</strong> In Theaters / Streaming
+                <strong>Availability:</strong> {currentMovieDetail.availability}
               </div>
             </>
           )}
@@ -121,7 +159,8 @@ const Movie = () => {
                 <div key={index} className="actor-row">
                   {group.map((actor) => (
                     <div className="actor-card" key={actor.id}>
-                      <ActorCard actor={actor} />
+                      <ActorCard actor={actor} />{" "}
+                      {/* Pastikan aktor diteruskan dengan benar */}
                     </div>
                   ))}
                 </div>
@@ -131,14 +170,13 @@ const Movie = () => {
 
           <div className="review-section">
             <h2 className="section-title">People think about this drama</h2>
-            {/* Tambahkan container agar review bisa di-scroll */}
             <div className="review-list">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
             </div>
             <ReviewForm onSubmit={(review) => console.log(review)} />
-          </div>    
+          </div>
         </div>
       </div>
     </div>

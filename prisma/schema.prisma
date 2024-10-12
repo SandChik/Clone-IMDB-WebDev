@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Drama { 
+  id              Int      @id @default(autoincrement())
+  title           String
+  alternativeTitle String?
+  year            Int
+  country         Country  @relation(fields: [countryId], references: [id])
+  countryId       Int
+  synopsis        String
+  availability    String
+  linkTrailer     String?
+  award           String?
+  posterUrl       String?
+  rating          Float?
+  duration        Int?
+  genres          DramaToGenres[]  
+  actors          ActorToDrama[]   // Relasi many-to-many dengan Actor melalui ActorToDrama
+  createdAt       DateTime @default(now())
+}
+
+
+model Country {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  dramas  Drama[]
+  actors  Actor[]
+}
+
+model Actor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  urlPhoto  String?  // URL untuk foto aktor (opsional)
+  country   Country  @relation(fields: [countryId], references: [id]) 
+  countryId Int
+  dramas    ActorToDrama[]
+}
+
+model ActorToDrama {
+  actorId  Int
+  dramaId  Int
+
+  actor    Actor  @relation(fields: [actorId], references: [id])
+  drama    Drama  @relation(fields: [dramaId], references: [id])
+
+  @@id([actorId, dramaId])
+}
+
+model Genre {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  dramas  DramaToGenres[]
+}
+
+model DramaToGenres {
+  dramaId  Int
+  genreId  Int
+
+  drama    Drama  @relation(fields: [dramaId], references: [id])
+  genre    Genre  @relation(fields: [genreId], references: [id])
+
+  @@id([dramaId, genreId])
+}

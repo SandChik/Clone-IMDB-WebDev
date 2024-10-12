@@ -1,28 +1,29 @@
 .actor-card {
-  width: 100%;
-  max-width: 150px;
+  width: 150px;
   text-align: center;
   margin: 10px;
-  display: flex;
-  flex-direction: column; /* Membuat elemen vertikal */
-  align-items: center;
 }
 
-.actor-card__img {
-  width: 100%; 
-  height: auto; /* Pastikan proporsi gambar tetap */
-  border-radius: 50%; /* Membuat gambar tetap bulat */
-  object-fit: cover; /* Pastikan gambar tetap tertutup penuh */
-  max-width: 150px; /* Ukuran maksimal gambar */
-  max-height: 150px; /* Tinggi maksimal gambar */
+.actor-card__image {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%; /* Membuat gambar menjadi bulat */
 }
 
-.actor-card p {
+.actor-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Pastikan gambar pas dalam area */
+}
+
+.actor-card__name {
   margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 1rem;
   color: white;
+  font-weight: bold;
 }
+
 
 /* Responsivitas */
 @media (max-width: 1024px) {

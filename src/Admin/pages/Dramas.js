@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -10,23 +10,26 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
+import axios from "axios";
 
 const Dramas = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedDrama, setSelectedDrama] = useState(null);
+  const [dramaList, setDramaList] = useState([]);
 
-  const dramaList = [
-    {
-      id: 1,
-      drama: "[2024] Japan - Eye Love You",
-      actors: "Takuya Kimura, Takeuchi Yuko, Neinen Reina",
-      genres: "Romance, Adventures, Comedy",
-      synopsis:
-        "I love this drama. It taught me a lot about money and finance...",
-      status: "Unapproved",
-    },
-    // Add more drama data as needed
-  ];
+  // Mengambil data drama dari backend
+  useEffect(() => {
+    const fetchDramas = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/dramas"); // Sesuaikan URL dengan server backend
+        setDramaList(response.data);
+      } catch (error) {
+        console.error("Error fetching dramas:", error);
+      }
+    };
+
+    fetchDramas();
+  }, []);
 
   const handleOpenModal = (drama) => {
     setSelectedDrama(drama);
@@ -38,7 +41,6 @@ const Dramas = () => {
     setSelectedDrama(null);
   };
 
-  // Utility Component for Text Fields
   const DramaTextField = ({ label, value, multiline = false, rows = 1 }) => (
     <TextField
       label={label}
@@ -60,7 +62,6 @@ const Dramas = () => {
 
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
-      {/* Drama Table */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -90,6 +91,26 @@ const Dramas = () => {
             <TableCell
               sx={{ color: "#fff", bgcolor: "#1E90FF", fontWeight: "bold" }}
             >
+              Poster
+            </TableCell>
+            <TableCell
+              sx={{ color: "#fff", bgcolor: "#1E90FF", fontWeight: "bold" }}
+            >
+              Photo URL
+            </TableCell>
+            <TableCell
+              sx={{ color: "#fff", bgcolor: "#1E90FF", fontWeight: "bold" }}
+            >
+              Rating
+            </TableCell>
+            <TableCell
+              sx={{ color: "#fff", bgcolor: "#1E90FF", fontWeight: "bold" }}
+            >
+              Duration
+            </TableCell>
+            <TableCell
+              sx={{ color: "#fff", bgcolor: "#1E90FF", fontWeight: "bold" }}
+            >
               Synopsis
             </TableCell>
             <TableCell
@@ -108,7 +129,7 @@ const Dramas = () => {
           {dramaList.map((drama) => (
             <TableRow key={drama.id}>
               <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
-                {drama.drama}
+                {drama.title} - {drama.year}
               </TableCell>
               <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
                 {drama.actors}
@@ -117,10 +138,36 @@ const Dramas = () => {
                 {drama.genres}
               </TableCell>
               <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                <img
+                  src={drama.posterUrl}
+                  alt="Poster"
+                  style={{
+                    width: "100px",
+                    height: "150px",
+                    objectFit: "cover",
+                  }}
+                />
+              </TableCell>
+              <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                <a
+                  href={drama.photoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Photo
+                </a>
+              </TableCell>
+              <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                {drama.rating ? `${drama.rating}/10` : "N/A"}
+              </TableCell>
+              <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                {drama.duration ? `${drama.duration} mins` : "N/A"}
+              </TableCell>
+              <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
                 {drama.synopsis}
               </TableCell>
               <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
-                {drama.status}
+                {drama.status || "Unapproved"}
               </TableCell>
               <TableCell sx={{ color: "#FF69B4", bgcolor: "#2a2a2a" }}>
                 <Button
@@ -137,7 +184,6 @@ const Dramas = () => {
         </TableBody>
       </Table>
 
-      {/* Modal for Editing Drama */}
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box
           sx={{
@@ -155,7 +201,7 @@ const Dramas = () => {
           <h2 style={{ marginBottom: "20px" }}>Edit Drama</h2>
           {selectedDrama && (
             <>
-              <DramaTextField label="Drama Title" value={selectedDrama.drama} />
+              <DramaTextField label="Drama Title" value={selectedDrama.title} />
               <DramaTextField label="Actors" value={selectedDrama.actors} />
               <DramaTextField label="Genres" value={selectedDrama.genres} />
               <DramaTextField

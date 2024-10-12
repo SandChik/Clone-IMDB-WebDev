@@ -9,29 +9,17 @@ const Home = () => {
   const [popularMovies, setPopularMovies] = useState([]);
 
   useEffect(() => {
-    fetch(
-      "https://api.themoviedb.org/3/movie/popular?api_key=4e44d9029b1270a757cddc766a1bcb63&language=en-US"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setPopularMovies(data.results);
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/dramas");
+        const data = await response.json();
+        setPopularMovies(data);
+      } catch (error) {
+        console.error("Error fetching dramas:", error);
+      }
+    };
 
-        // Cek jika tampilan adalah mobile
-        if (window.matchMedia("(max-width: 576px)").matches) {
-          // Batasi teks berdasarkan kata
-          document
-            .querySelectorAll(".posterImage__description")
-            .forEach(function (element) {
-              const maxWords = 20; // Batas maksimal kata
-              let text = element.textContent;
-              let words = text.split(" ");
-              if (words.length > maxWords) {
-                text = words.slice(0, maxWords).join(" ") + "...";
-                element.textContent = text;
-              }
-            });
-        }
-      });
+    fetchMovies();
   }, []);
 
   return (
@@ -57,26 +45,20 @@ const Home = () => {
             >
               <div className="posterImage">
                 <img
-                  src={`https://image.tmdb.org/t/p/original${
-                    movie && movie.backdrop_path
-                  }`}
-                  alt={movie.original_title}
+                  src={movie.posterUrl || "https://via.placeholder.com/500x750"}
+                  alt={movie.title}
                 />
               </div>
               <div className="posterImage__overlay">
-                <div className="posterImage__title">
-                  {movie ? movie.original_title : ""}
-                </div>
+                <div className="posterImage__title">{movie.title}</div>
                 <div className="posterImage__runtime">
-                  {movie ? movie.release_date : ""}
+                  {movie.year}
                   <div className="posterImage__rating">
-                    {movie.vote_average.toFixed(1)}
+                    {movie.rating ? movie.rating.toFixed(1) : "N/A"}
                     <i className="fas fa-star" />
                   </div>
                 </div>
-                <div className="posterImage__description">
-                  {movie ? movie.overview : ""}
-                </div>
+                <div className="posterImage__description">{movie.synopsis}</div>
               </div>
             </Link>
           ))}
@@ -91,4 +73,3 @@ const Home = () => {
 };
 
 export default Home;
-  

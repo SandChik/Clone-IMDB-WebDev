@@ -1,15 +1,18 @@
 import React from "react";
-import "./actorCard.css";
+import "./actorCard.css"; // Pastikan ada file CSS untuk styling
 
 const ActorCard = ({ actor }) => {
+  console.log(actor.urlPhoto); // Lihat URL gambar yang diterima
+
   return (
     <div className="actor-card">
-      <img
-        className="actor-card__img"
-        src={`https://image.tmdb.org/t/p/w500${actor.profile_path}`}
-        alt={actor.name}
-      />
-      <p>{actor.name}</p>
+      <div className="actor-card__image">
+        <img
+          src={actor.urlPhoto || "https://via.placeholder.com/150"} // Jika tidak ada URL, tampilkan placeholder
+          alt={actor.name}
+        />
+      </div>
+      <div className="actor-card__name">{actor.name}</div>
     </div>
   );
 };
