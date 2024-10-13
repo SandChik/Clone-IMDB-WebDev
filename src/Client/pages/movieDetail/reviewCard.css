@@ -34,3 +34,23 @@
 .review__content {
   flex-grow: 1;
 }
+
+/* Tambahkan aturan untuk membuat div bisa di-scroll jika konten lebih dari 5 review */
+.review-list {
+  max-height: 400px; /* Sesuaikan tinggi maksimal */
+  overflow-y: auto; /* Aktifkan scroll vertikal */
+  padding-right: 10px; /* Beri jarak agar scrollbar tidak menumpuk dengan konten */
+}
+
+.review-list::-webkit-scrollbar {
+  width: 8px; /* Lebar scrollbar */
+}
+
+.review-list::-webkit-scrollbar-thumb {
+  background-color: #FFD700; /* Warna scrollbar */
+  border-radius: 10px;
+}
+
+.review-list::-webkit-scrollbar-track {
+  background-color: #333; /* Warna latar belakang scrollbar */
+}

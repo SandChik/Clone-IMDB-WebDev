@@ -127,6 +127,7 @@ const getDramaById = async (id) => {
         actors: {
           include: { actor: true }, // Include actor details
         },
+        reviews: true, // Tambahkan relasi review ke drama
       },
     });
 
@@ -142,8 +143,44 @@ const getDramaById = async (id) => {
   }
 };
 
+const getReviewsByDramaId = async (dramaId) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { dramaId: dramaId }, // dramaId sudah dipastikan integer
+      orderBy: { createdAt: "desc" },
+    });
+    console.log("Fetched reviews for drama:", reviews);
+    return reviews;
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    throw err;
+  }
+};
+
+// Fungsi untuk menambahkan review baru ke database
+const addReview = async (reviewData) => {
+  try {
+    const newReview = await prisma.review.create({
+      data: {
+        author: reviewData.author,
+        content: reviewData.content,
+        rating: reviewData.rating,
+        dramaId: reviewData.dramaId, // ID Drama terkait
+      },
+    });
+    console.log("Review created successfully:", newReview);
+    return newReview;
+  } catch (err) {
+    console.error("Error creating review:", err);
+    throw err;
+  }
+};
+
 module.exports = {
   addNewDrama,
   getAllDramas,
   getDramaById,
+  getReviewsByDramaId,
+  addReview,
 };
+

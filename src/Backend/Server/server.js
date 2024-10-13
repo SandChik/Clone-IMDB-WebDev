@@ -5,6 +5,8 @@ const {
   addNewDrama,
   getAllDramas,
   getDramaById,
+  getReviewsByDramaId,
+  addReview,
 } = require("../Controllers/dramaController");
 
 const app = express();
@@ -43,6 +45,35 @@ app.get("/api/dramas/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching drama detail" });
+  }
+});
+
+// Route untuk mendapatkan review berdasarkan dramaId
+app.get("/api/reviews/:dramaId", async (req, res) => {
+  try {
+    const dramaId = parseInt(req.params.dramaId); // Convert dramaId menjadi integer
+    const reviews = await getReviewsByDramaId(dramaId); // Panggil fungsi dengan dramaId yang sudah di-convert
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ message: "Error fetching reviews" });
+  }
+});
+
+// Route untuk menambahkan review baru
+app.post("/api/reviews", async (req, res) => {
+  try {
+    const { author, content, rating, dramaId } = req.body;
+    const newReview = await addReview({
+      author,
+      content,
+      rating: parseFloat(rating), // Konversi rating jika perlu
+      dramaId: parseInt(dramaId),  // Pastikan dramaId dalam bentuk integer
+    });
+    res.status(201).json(newReview);  // Kirim respon jika sukses
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ message: "Error creating review" });
   }
 });
 

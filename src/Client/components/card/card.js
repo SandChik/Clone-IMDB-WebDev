@@ -23,33 +23,36 @@ const Cards = ({ movie }) => {
         </div>
       ) : (
         <Link
-          to={`/movie/${movie.id}`}
+          to={`/movie/${movie.id}`} // Menampilkan detail film berdasarkan ID dari database lokal
           style={{ textDecoration: "none", color: "white" }}
         >
           <Card className="cards h-100">
             <div className="cards__img-container">
               <Card.Img
                 variant="top"
-                src={`https://image.tmdb.org/t/p/original${
-                  movie ? movie.poster_path : ""
-                }`}
-                alt="Movie Poster"
+                src={
+                  movie.posterUrl // Menggunakan poster URL dari database lokal
+                    ? movie.posterUrl
+                    : "https://via.placeholder.com/500x750"
+                }
+                alt={movie.title} // Menggunakan title dari database lokal
                 className="cards__img"
               />
             </div>
             <Card.Body className="cards__overlay d-flex flex-column justify-content-end">
               <Card.Title className="card__title">
-                {movie ? movie.original_title : ""}
+                {movie.title} {/* Menggunakan title dari database lokal */}
               </Card.Title>
               <Card.Text className="card__runtime">
-                {movie ? movie.release_date : ""}
+                {movie.year} {/* Menggunakan year dari database lokal */}
                 <span className="card__rating">
-                  {movie ? movie.vote_average.toFixed(1) : ""}{" "}
+                  {movie.rating ? movie.rating.toFixed(1) : "N/A"}{" "}
                   <i className="fas fa-star" />
                 </span>
               </Card.Text>
               <Card.Text className="card__description">
-                {movie ? movie.overview.slice(0, 118) + "..." : ""}
+                {movie.synopsis ? movie.synopsis.slice(0, 118) + "..." : ""}{" "}
+                {/* Menggunakan synopsis dari database lokal */}
               </Card.Text>
             </Card.Body>
           </Card>

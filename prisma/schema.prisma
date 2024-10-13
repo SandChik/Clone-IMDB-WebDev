@@ -23,6 +23,7 @@ model Drama {
   duration        Int?
   genres          DramaToGenres[]  
   actors          ActorToDrama[]   // Relasi many-to-many dengan Actor melalui ActorToDrama
+  reviews         Review[]         // Relasi balik ke Review
   createdAt       DateTime @default(now())
 }
 
@@ -68,3 +69,14 @@ model DramaToGenres {
 
   @@id([dramaId, genreId])
 }
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  author    String
+  content   String
+  rating    Float?
+  createdAt DateTime @default(now())
+  drama     Drama    @relation(fields: [dramaId], references: [id])
+  dramaId   Int
+}
+

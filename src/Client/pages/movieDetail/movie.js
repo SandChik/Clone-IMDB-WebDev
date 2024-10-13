@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import ActorCard from "./actorCard";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import ReviewCard from "./reviewCard"; // Import review card
-import ReviewForm from "./reviewForm"; // Import review form
+import ReviewCard from "./reviewCard";
+import ReviewForm from "./reviewForm";
 
 const Movie = () => {
   const [currentMovieDetail, setMovie] = useState(null);
@@ -19,9 +19,8 @@ const Movie = () => {
         const res = await fetch(`http://localhost:5000/api/dramas/${id}`);
         const data = await res.json();
         setMovie(data);
-        setActors(data.actors.map((actor) => actor.actor)); // Menyusun array aktor
-        // Set reviews jika ada
-        setReviews([]); // Anda bisa tambahkan pengambilan review di sini
+        setActors(data.actors.map((actor) => actor.actor));
+        setReviews(data.reviews); // Set reviews yang ada
       } catch (error) {
         console.error("Error fetching movie details:", error);
       }
@@ -30,6 +29,11 @@ const Movie = () => {
     fetchMovieData();
     window.scrollTo(0, 0);
   }, [id]);
+
+  // Fungsi untuk memperbarui review setelah review baru ditambahkan
+  const handleNewReview = (newReview) => {
+    setReviews((prevReviews) => [newReview, ...prevReviews]);
+  };
 
   const groupedActors = (actors, size = 5) => {
     const result = [];
@@ -159,8 +163,7 @@ const Movie = () => {
                 <div key={index} className="actor-row">
                   {group.map((actor) => (
                     <div className="actor-card" key={actor.id}>
-                      <ActorCard actor={actor} />{" "}
-                      {/* Pastikan aktor diteruskan dengan benar */}
+                      <ActorCard actor={actor} />
                     </div>
                   ))}
                 </div>
@@ -171,11 +174,9 @@ const Movie = () => {
           <div className="review-section">
             <h2 className="section-title">People think about this drama</h2>
             <div className="review-list">
-              {reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
+              <ReviewCard dramaId={id} reviews={reviews} />
             </div>
-            <ReviewForm onSubmit={(review) => console.log(review)} />
+            <ReviewForm dramaId={id} onReviewSubmit={handleNewReview} />
           </div>
         </div>
       </div>

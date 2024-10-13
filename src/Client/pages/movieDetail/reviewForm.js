@@ -1,28 +1,65 @@
 import React, { useState } from "react";
 import "./reviewForm.css";
 
-const ReviewForm = ({ onSubmit }) => {
+const ReviewForm = ({ dramaId, onReviewSubmit }) => {
   const [name, setName] = useState("");
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(0); // Menggunakan skala 0.5
   const [comment, setComment] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && rating && comment) {
-      onSubmit({ name, rating, comment });
-      setName("");
-      setRating(0);
-      setComment("");
+      const reviewData = {
+        author: name,
+        rating: rating * 2, // Kalikan rating dengan 2 untuk rentang 0-10
+        content: comment,
+        dramaId: dramaId,
+      };
+
+      try {
+        const res = await fetch("http://localhost:5000/api/reviews", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reviewData),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          onReviewSubmit(data);
+          setName("");
+          setRating(0);
+          setComment("");
+          alert("Review successfully submitted!"); // Tampilkan alert saat berhasil
+        } else {
+          alert("Failed to submit review.");
+        }
+      } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("An error occurred while submitting the review.");
+      }
     } else {
       alert("Please fill in all fields");
     }
   };
 
+  // Fungsi untuk menghitung nilai rating berdasarkan posisi klik
+  const handleStarClick = (event, index) => {
+    const rect = event.target.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const width = rect.width;
+
+    if (clickX < width / 2) {
+      setRating(index + 0.5); // Setengah bintang
+    } else {
+      setRating(index + 1); // Bintang penuh
+    }
+  };
+
   return (
     <div>
-      {/* Heading moved outside form */}
-      <h2 className="section-title">Add your review</h2>{" "}
-      {/* Konsisten dengan section lainnya */}
+      <h2 className="section-title">Add your review</h2>
       <div className="reviewForm">
         <form onSubmit={handleSubmit} className="reviewForm__form">
           <div className="reviewForm__group">
@@ -40,11 +77,20 @@ const ReviewForm = ({ onSubmit }) => {
             <label>Rate</label>
             <div className="reviewForm__stars">
               {[...Array(5)].map((_, index) => (
-                <i
+                <div
                   key={index}
-                  className={`fas fa-star ${index < rating ? "active" : ""}`}
-                  onClick={() => setRating(index + 1)}
-                />
+                  className="reviewForm__star-wrapper"
+                  onClick={(event) => handleStarClick(event, index)}
+                >
+                  <i
+                    className={`fas fa-star ${
+                      index + 1 <= rating ? "active" : ""
+                    }`}
+                  />
+                  {rating > index && rating < index + 1 && (
+                    <i className="fas fa-star-half-alt active" />
+                  )}
+                </div>
               ))}
             </div>
           </div>

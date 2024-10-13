@@ -58,21 +58,6 @@
   min-height: 100px;
 }
 
-.reviewForm__stars {
-  display: flex;
-  gap: 5px;
-}
-
-.reviewForm__stars .fa-star {
-  font-size: 1.5rem;
-  color: #ccc;
-  cursor: pointer;
-}
-
-.reviewForm__stars .fa-star.active {
-  color: #FFD700;
-}
-
 .reviewForm__note {
   font-size: 0.85rem;
   color: #888;
@@ -88,4 +73,59 @@
   border-radius: 5px;
   cursor: pointer;
   width: 100px;
+  transition: background-color 0.3s;
+}
+
+.reviewForm__submit:hover {
+  background-color: #e0b800;
+}
+
+/* Gaya untuk container bintang */
+.reviewForm__stars {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.reviewForm__star-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.reviewForm__stars .fa-star,
+.reviewForm__stars .fa-star-half-alt {
+  font-size: 1.8rem;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+.reviewForm__stars .fa-star.active,
+.reviewForm__stars .fa-star-half-alt.active {
+  color: #FFD700;
+}
+
+.reviewForm__star-wrapper .fa-star-half-alt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0% 100%);
+}
+
+.reviewForm__star-wrapper .fa-star-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  color: #FFD700;
+}
+
+.reviewForm__star-wrapper .fa-star,
+.reviewForm__star-wrapper .fa-star-half-alt {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
