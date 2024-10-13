@@ -1,24 +1,3 @@
-.movie__list {
-    display: flex;
-    overflow-x: scroll;
-    padding: 1rem;
-    scroll-behavior: smooth;
-}
-
-.movie__list::-webkit-scrollbar {
-    height: 8px;
-}
-
-.movie__list::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 10px;
-}
-
-.list__cards {
-    display: flex;
-    flex-direction: row;
-}
-
 .cards {
     min-width: 200px;
     margin-right: 1rem;
@@ -28,6 +7,8 @@
     cursor: pointer;
     position: relative;
     z-index: 1; /* Pastikan card berada di atas elemen lain */
+    width: 200px; /* Tetapkan ukuran lebar card */
+    height: 350px; /* Tetapkan ukuran tinggi card */
 }
 
 .cards:hover {

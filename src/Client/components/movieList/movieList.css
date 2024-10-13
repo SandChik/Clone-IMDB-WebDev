@@ -1,8 +1,13 @@
+.list__cards {
+    display: grid; /* Tetap menggunakan grid */
+    gap: 1rem; /* Jarak antar card */
+}
+
 .movie__list {
     display: flex;
-    overflow-x: auto; /* Tambahkan scroll horizontal */
     padding: 0 3rem 3rem 3rem;
     scroll-behavior: smooth;
+    justify-content: center; /* Memastikan card terpusat */
 }
 
 .movie__list::-webkit-scrollbar {
@@ -17,6 +22,8 @@
 .list__title {
     font-size: 1.75rem;
     margin: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -44,6 +51,9 @@
     .movie__list {
         padding: 0.5rem;
     }
+    .list__cards {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
 
 /* Untuk perangkat dengan layar sedang (tablet) */
@@ -64,6 +74,9 @@
     .movie__list {
         padding: 1rem;
     }
+    .list__cards {
+        grid-template-columns: repeat(3, 1fr); /* 3 card per baris untuk tablet */
+    }
 }
 
 /* Untuk perangkat dengan layar besar (desktop) */
@@ -83,5 +96,8 @@
 
     .movie__list {
         padding: 1.5rem;
+    }
+    .list__cards {
+        grid-template-columns: repeat(7, 1fr); /* 3 card per baris untuk tablet */
     }
 }

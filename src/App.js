@@ -37,7 +37,6 @@ const ClientLayout = () => {
         <div className="page__content">
           <Routes>
             <Route index element={<Home />} />
-            {/* Menggunakan ID dari database untuk mengambil detail */}
             <Route path="movie/:id" element={<Movie />} />
             <Route path="movies/:type" element={<MovieList />} />
             <Route path="search" element={<SearchResults />} />
