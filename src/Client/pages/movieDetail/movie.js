@@ -17,10 +17,11 @@ const Movie = () => {
     const fetchMovieData = async () => {
       try {
         const res = await fetch(`http://localhost:5000/api/dramas/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch movie details");
         const data = await res.json();
         setMovie(data);
-        setActors(data.actors.map((actor) => actor.actor));
-        setReviews(data.reviews); // Set reviews yang ada
+        setActors(data.actors ? data.actors.map((actor) => actor.actor) : []); // Tambahkan pengecekan untuk actors
+        setReviews(data.reviews || []); // Set reviews dengan fallback kosong jika tidak ada
       } catch (error) {
         console.error("Error fetching movie details:", error);
       }
@@ -131,17 +132,31 @@ const Movie = () => {
                 </span>
               </div>
               <div className="movie__genres">
-                {currentMovieDetail.genres.map((genre) => (
-                  <span className="movie__genre" key={genre.genre.id}>
-                    {genre.genre.name}
-                  </span>
-                ))}
+                {currentMovieDetail.genres &&
+                  currentMovieDetail.genres.map((genre) => (
+                    <span className="movie__genre" key={genre.genre.id}>
+                      {genre.genre.name}
+                    </span>
+                  ))}
               </div>
               <div className="movie__synopsis">
                 <p>{currentMovieDetail.synopsis}</p>
               </div>
               <div className="movie__availability">
                 <strong>Availability:</strong> {currentMovieDetail.availability}
+              </div>
+              <div className="movie__awards">
+                <strong>Awards:</strong>
+                {currentMovieDetail.awards &&
+                currentMovieDetail.awards.length > 0 ? (
+                  <ul>
+                    {currentMovieDetail.awards.map((award) => (
+                      <li key={award.id}>{award.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No awards available</p>
+                )}
               </div>
             </>
           )}

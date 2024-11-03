@@ -1,5 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id                Int              @id @default(autoincrement())
+  name              String           @unique
+  dramas            Drama[]
+  actors            Actor[]
+  awardToCountries  AwardToCountry[] // Relasi untuk AwardToCountry
+}
+
+model Award {
+  id                Int              @id @default(autoincrement())
+  name              String
+  dramaId           Int?             // dramaId dibuat opsional
+  drama             Drama?           @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  awardToCountries  AwardToCountry[] // Relasi balik untuk AwardToCountry
+}
+
+model AwardToCountry {
+  awardId   Int
+  countryId Int
+  award     Award   @relation(fields: [awardId], references: [id], onDelete: Cascade)
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@id([awardId, countryId])
+}
+
 model Drama {
-  id             Int      @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   title          String
   alternativeTitle String?
   year           Int
@@ -7,31 +41,24 @@ model Drama {
   synopsis       String
   availability   String?
   linkTrailer    String?
-  award          String?
   posterUrl      String?
   rating         Float?
   duration       Int?
-  status         Int      @default(0) // Ubah menjadi Int dengan nilai default 0
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  country        Country  @relation(fields: [countryId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
+  status         Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  country        Country         @relation(fields: [countryId], references: [id], onDelete: Cascade)
   genres         DramaToGenres[]
   actors         ActorToDrama[]
   reviews        Review[]
-}
-
-model Country {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  dramas  Drama[]  @relation(onDelete: Cascade) // Tambahkan onDelete: Cascade
-  actors  Actor[]  @relation(onDelete: Cascade) // Tambahkan onDelete: Cascade
+  awards         Award[]         // Satu Drama dapat memiliki banyak Award
 }
 
 model Actor {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   name      String
-  urlPhoto  String?  // URL untuk foto aktor (opsional)
-  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
+  urlPhoto  String?
+  country   Country         @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId Int
   dramas    ActorToDrama[]
 }
@@ -40,15 +67,15 @@ model ActorToDrama {
   actorId  Int
   dramaId  Int
 
-  actor    Actor  @relation(fields: [actorId], references: [id])
-  drama    Drama  @relation(fields: [dramaId], references: [id])
+  actor    Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  drama    Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
 
   @@id([actorId, dramaId])
 }
 
 model Genre {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
+  id      Int             @id @default(autoincrement())
+  name    String          @unique
   dramas  DramaToGenres[]
 }
 
@@ -56,18 +83,18 @@ model DramaToGenres {
   dramaId  Int
   genreId  Int
 
-  drama    Drama  @relation(fields: [dramaId], references: [id])
-  genre    Genre  @relation(fields: [genreId], references: [id])
+  drama    Drama          @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  genre    Genre          @relation(fields: [genreId], references: [id], onDelete: Cascade)
 
   @@id([dramaId, genreId])
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   author    String
   content   String
   rating    Float?
-  createdAt DateTime @default(now())
-  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
+  createdAt DateTime        @default(now())
+  drama     Drama           @relation(fields: [dramaId], references: [id], onDelete: Cascade)
   dramaId   Int
 }

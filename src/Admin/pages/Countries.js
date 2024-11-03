@@ -9,14 +9,29 @@ import {
   TableCell,
   TableBody,
   Typography,
+  Modal,
 } from "@mui/material";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "#1c1c1c",
+  borderRadius: "8px",
+  boxShadow: 24,
+  p: 4,
+};
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [newCountry, setNewCountry] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedCountryId, setSelectedCountryId] = useState(null);
 
-  // Fetch all countries from the backend
   const fetchCountries = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/countries");
@@ -28,10 +43,9 @@ const Countries = () => {
   };
 
   useEffect(() => {
-    fetchCountries(); // Load countries on component mount
+    fetchCountries();
   }, []);
 
-  // Handle adding a new country
   const handleAddCountry = async () => {
     if (newCountry.trim() === "") return;
 
@@ -39,45 +53,42 @@ const Countries = () => {
       const response = await fetch("http://localhost:5000/api/countries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCountry.trim().toUpperCase() }),
+        body: JSON.stringify({ name: newCountry.toUpperCase() }),
       });
-
       if (response.ok) {
-        fetchCountries(); // Refresh data after successful addition
-        setNewCountry(""); // Clear input field
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to add country:", errorData.message);
+        setNewCountry("");
+        fetchCountries();
+        handleCloseAddModal();
       }
     } catch (error) {
       console.error("Error adding country:", error);
     }
   };
 
-  // Handle deleting a country
-  const handleDeleteCountry = async (id) => {
+  const handleDeleteCountry = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/countries/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        fetchCountries(); // Refresh data after successful deletion
-      } else {
-        console.error("Failed to delete country");
-      }
+      await fetch(`http://localhost:5000/api/countries/${selectedCountryId}`, {
+        method: "DELETE",
+      });
+      fetchCountries();
+      handleCloseDeleteModal();
     } catch (error) {
       console.error("Error deleting country:", error);
     }
   };
 
-  // Filter countries based on search term
   const filteredCountries = countries.filter((country) =>
     country.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleOpenAddModal = () => setOpenAddModal(true);
+  const handleCloseAddModal = () => setOpenAddModal(false);
+
+  const handleOpenDeleteModal = (id) => {
+    setSelectedCountryId(id);
+    setOpenDeleteModal(true);
+  };
+  const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
@@ -88,47 +99,127 @@ const Countries = () => {
         Manage Countries
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 3, justifyContent: "center" }}>
-        <TextField
-          label="Country"
-          variant="outlined"
-          value={newCountry}
-          onChange={(e) => setNewCountry(e.target.value)}
-          sx={{
-            input: { color: "white" },
-            label: { color: "#fff" },
-            backgroundColor: "#2c2c2c",
-            borderColor: "#00BFFF",
-            width: 200,
-          }}
-        />
-        <Button
-          variant="contained"
-          onClick={handleAddCountry}
-          sx={{
-            bgcolor: "#1E90FF",
-            "&:hover": { bgcolor: "#00BFFF" },
-            fontWeight: "bold",
-            height: "fit-content",
-          }}
-        >
-          Submit
-        </Button>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+          gap: 2,
+          width: "80%",
+          margin: "0 auto",
+        }}
+      >
+        {/* Search Field di Kiri */}
         <TextField
           label="Search"
           variant="outlined"
-          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
             borderColor: "#00BFFF",
-            width: 200,
+            width: "20%",
           }}
         />
+
+        {/* Tombol untuk Membuka Modal */}
+        <Button
+          variant="contained"
+          onClick={handleOpenAddModal}
+          sx={{
+            bgcolor: "#1E90FF",
+            "&:hover": { bgcolor: "#00BFFF" },
+            fontWeight: "bold",
+          }}
+        >
+          Add Country
+        </Button>
       </Box>
 
+      {/* Modal untuk Input Country */}
+      <Modal open={openAddModal} onClose={handleCloseAddModal}>
+        <Box sx={modalStyle}>
+          <Typography
+            variant="h6"
+            sx={{ color: "white", textAlign: "center", mb: 2 }}
+          >
+            Tambahkan Country Baru
+          </Typography>
+          <TextField
+            label="Country"
+            variant="outlined"
+            value={newCountry}
+            onChange={(e) => setNewCountry(e.target.value)}
+            fullWidth
+            sx={{
+              input: { color: "white" },
+              label: { color: "#fff" },
+              backgroundColor: "#2c2c2c",
+              mb: 2,
+            }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleAddCountry}
+            fullWidth
+            sx={{
+              bgcolor: "#1E90FF",
+              "&:hover": { bgcolor: "#00BFFF" },
+              fontWeight: "bold",
+            }}
+          >
+            Submit
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal untuk Konfirmasi Delete */}
+      <Modal open={openDeleteModal} onClose={handleCloseDeleteModal}>
+        <Box sx={modalStyle}>
+          <Typography
+            variant="h6"
+            sx={{ color: "white", textAlign: "center", mb: 2 }}
+          >
+            Yakin Mau Hapus Country?
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "white", textAlign: "center", mb: 3 }}
+          >
+            Semua data yang terkait dengan country ini juga akan dihapus.
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleDeleteCountry}
+            fullWidth
+            sx={{
+              bgcolor: "#FF5733",
+              "&:hover": { bgcolor: "#FF4500" },
+              fontWeight: "bold",
+              mb: 1,
+            }}
+          >
+            Ya, Hapus
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleCloseDeleteModal}
+            fullWidth
+            sx={{
+              color: "#fff",
+              borderColor: "#00BFFF",
+              "&:hover": { bgcolor: "#00BFFF" },
+              fontWeight: "bold",
+            }}
+          >
+            Batal
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Tabel Country */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -141,7 +232,6 @@ const Countries = () => {
         <TableHead>
           <TableRow>
             <TableCell
-              align="left"
               sx={{
                 color: "#fff",
                 bgcolor: "#1E90FF",
@@ -152,7 +242,6 @@ const Countries = () => {
               ID
             </TableCell>
             <TableCell
-              align="left"
               sx={{
                 color: "#fff",
                 bgcolor: "#1E90FF",
@@ -163,7 +252,6 @@ const Countries = () => {
               Country
             </TableCell>
             <TableCell
-              align="left"
               sx={{
                 color: "#fff",
                 bgcolor: "#1E90FF",
@@ -179,19 +267,16 @@ const Countries = () => {
           {filteredCountries.map((country) => (
             <TableRow key={country.id}>
               <TableCell
-                align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
                 {country.id}
               </TableCell>
               <TableCell
-                align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
                 {country.name}
               </TableCell>
               <TableCell
-                align="left"
                 sx={{
                   color: "#FF69B4",
                   bgcolor: "#2a2a2a",
@@ -199,8 +284,8 @@ const Countries = () => {
                 }}
               >
                 <Button
+                  onClick={() => handleOpenDeleteModal(country.id)}
                   sx={{ color: "#FF69B4", fontSize: "0.9rem" }}
-                  onClick={() => handleDeleteCountry(country.id)}
                 >
                   Delete
                 </Button>

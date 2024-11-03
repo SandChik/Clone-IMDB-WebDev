@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -10,10 +10,90 @@ import {
   TableBody,
   Typography,
 } from "@mui/material";
+import axios from "axios";
 
 const Awards = () => {
-  // Array untuk header tabel
-  const tableHeaders = ["ID", "Country", "Year", "Award", "Actions"];
+  const [awards, setAwards] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [countryId, setCountryId] = useState("");
+  const [award, setAward] = useState("");
+  const [editId, setEditId] = useState(null);
+
+  const tableHeaders = ["ID", "Country", "Award", "Actions"];
+
+  useEffect(() => {
+    fetchAwards();
+    fetchCountries();
+  }, []);
+
+const fetchAwards = async () => {
+  try {
+    const response = await axios.get("http://localhost:5000/api/awards");
+    // Sort data berdasarkan 'id' agar urutannya tetap konsisten
+    const sortedAwards = response.data.sort((a, b) => a.id - b.id);
+    setAwards(sortedAwards);
+  } catch (error) {
+    console.error("Error fetching awards:", error);
+  }
+};
+
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/countries");
+      setCountries(response.data);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!countryId || !award) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      if (editId) {
+        // Update existing award
+        await axios.put(`http://localhost:5000/api/awards/${editId}`, {
+          countryId,
+          name: award,
+        });
+        setEditId(null);
+      } else {
+        // Add new award
+        await axios.post("http://localhost:5000/api/awards", {
+          countryId,
+          name: award,
+        });
+      }
+      setCountryId("");
+      setAward("");
+      fetchAwards();
+    } catch (error) {
+      console.error("Error submitting award:", error);
+    }
+  };
+
+  const handleEdit = (award) => {
+    setEditId(award.id);
+    setCountryId(
+      award.countries && award.countries.length > 0 ? award.countries[0].id : ""
+    );
+    setAward(award.name);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this award?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/awards/${id}`);
+        fetchAwards();
+      } catch (error) {
+        console.error("Error deleting award:", error);
+      }
+    }
+  };
 
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
@@ -24,43 +104,46 @@ const Awards = () => {
         Manage Awards
       </Typography>
 
-      {/* Input Fields dan Tombol Submit */}
       <Box sx={{ display: "flex", gap: 2, mb: 3, justifyContent: "center" }}>
         <TextField
+          select
           label="Country"
           variant="outlined"
+          value={countryId}
+          onChange={(e) => setCountryId(e.target.value)}
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
-            borderColor: "#00BFFF",
             width: 200,
           }}
-        />
-        <TextField
-          label="Year"
-          variant="outlined"
-          sx={{
-            input: { color: "white" },
-            label: { color: "#fff" },
-            backgroundColor: "#2c2c2c",
-            borderColor: "#00BFFF",
-            width: 150,
+          SelectProps={{
+            native: true,
           }}
-        />
+        >
+          <option value="" disabled>
+          </option>
+          {countries.map((country) => (
+            <option key={country.id} value={country.id}>
+              {country.name}
+            </option>
+          ))}
+        </TextField>
         <TextField
           label="Award"
           variant="outlined"
+          value={award}
+          onChange={(e) => setAward(e.target.value)}
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
-            borderColor: "#00BFFF",
             width: 300,
           }}
         />
         <Button
           variant="contained"
+          onClick={handleSubmit}
           sx={{
             bgcolor: "#1E90FF",
             "&:hover": { bgcolor: "#00BFFF" },
@@ -68,11 +151,10 @@ const Awards = () => {
             height: "fit-content",
           }}
         >
-          Submit
+          {editId ? "Update" : "Submit"}
         </Button>
       </Box>
 
-      {/* Tabel untuk Awards */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -101,26 +183,7 @@ const Awards = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {[
-            {
-              id: 1,
-              country: "Japan",
-              year: "2024",
-              award: "Japanese Drama Awards Spring 2024",
-            },
-            {
-              id: 2,
-              country: "Korea",
-              year: "2024",
-              award: "Korean Drama Awards Spring 2024",
-            },
-            {
-              id: 3,
-              country: "China",
-              year: "2024",
-              award: "Chinese Drama Awards Spring 2024",
-            },
-          ].map((award) => (
+          {awards.map((award) => (
             <TableRow key={award.id}>
               <TableCell
                 align="left"
@@ -132,33 +195,31 @@ const Awards = () => {
                 align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
-                {award.country}
+                {award.countries && award.countries.length > 0
+                  ? award.countries.map((country) => country.name).join(", ")
+                  : "No Country"}
               </TableCell>
               <TableCell
                 align="left"
                 sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
-                {award.year}
+                {award.name}
               </TableCell>
               <TableCell
                 align="left"
-                sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
+                sx={{ color: "#FF69B4", bgcolor: "#2a2a2a", fontSize: "1rem" }}
               >
-                {award.award}
-              </TableCell>
-              <TableCell
-                align="left"
-                sx={{
-                  color: "#FF69B4",
-                  bgcolor: "#2a2a2a",
-                  fontSize: "1rem",
-                }}
-              >
-                <Button sx={{ color: "#FF69B4", fontSize: "0.9rem" }}>
-                  Rename
+                <Button
+                  onClick={() => handleEdit(award)}
+                  sx={{ color: "#FF69B4", fontSize: "0.9rem" }}
+                >
+                  Edit
                 </Button>{" "}
                 |{" "}
-                <Button sx={{ color: "#FF69B4", fontSize: "0.9rem" }}>
+                <Button
+                  onClick={() => handleDelete(award.id)}
+                  sx={{ color: "#FF69B4", fontSize: "0.9rem" }}
+                >
                   Delete
                 </Button>
               </TableCell>

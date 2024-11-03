@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const awardRoutes = require("./awardRoutes");
 
 const {
   addNewDrama,
@@ -23,6 +24,7 @@ const port = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(awardRoutes);
 
 // Route untuk menambahkan drama
 app.post("/api/dramas", async (req, res) => {
@@ -49,13 +51,15 @@ app.get("/api/dramas", async (req, res) => {
 // Route untuk mendapatkan drama berdasarkan ID
 app.get("/api/dramas/:id", async (req, res) => {
   try {
-    const drama = await getDramaById(parseInt(req.params.id));
-    res.status(200).json(drama);
+    const dramaId = parseInt(req.params.id, 10); // Pastikan id diubah menjadi integer
+    const dramaData = await getDramaById(dramaId);
+    res.status(200).json(dramaData);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching drama detail" });
+    console.error("Error fetching drama by ID:", error);
+    res.status(500).json({ message: "Error fetching drama by ID" });
   }
 });
+
 
 // Route untuk mendapatkan review berdasarkan dramaId
 app.get("/api/reviews/:dramaId", async (req, res) => {

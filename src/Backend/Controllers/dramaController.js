@@ -98,6 +98,7 @@ const getDramaById = async (id) => {
         genres: { include: { genre: true } },
         actors: { include: { actor: true } },
         reviews: true,
+        awards: true, // Pastikan include awards jika schema sudah benar
       },
     });
     if (!drama) throw new Error("Drama not found");
@@ -107,6 +108,7 @@ const getDramaById = async (id) => {
     throw err;
   }
 };
+
 
 const getReviewsByDramaId = async (dramaId) => {
   try {
