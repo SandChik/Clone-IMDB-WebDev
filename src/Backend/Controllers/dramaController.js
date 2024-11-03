@@ -1,6 +1,5 @@
 const prisma = require("../prismaClient");
 
-// Fungsi untuk menambahkan drama baru ke database
 const addNewDrama = async (dramaData) => {
   try {
     // Cari atau buat country berdasarkan nama
@@ -14,38 +13,31 @@ const addNewDrama = async (dramaData) => {
       });
     }
 
-    // Handle genres: jika ada genres, cari atau buat genre
+    // Handle genres
     const genreIds = dramaData.genres
       ? await Promise.all(
           dramaData.genres.map(async (genreName) => {
             let genre = await prisma.genre.findUnique({
               where: { name: genreName },
             });
-
             if (!genre) {
-              genre = await prisma.genre.create({
-                data: { name: genreName },
-              });
+              genre = await prisma.genre.create({ data: { name: genreName } });
             }
             return { genreId: genre.id };
           })
         )
       : [];
 
-    // Handle actors: jika ada actors, cari atau buat actor
+    // Handle actors
     const actorIds = dramaData.actors
       ? await Promise.all(
           dramaData.actors.map(async (actorName) => {
             let actor = await prisma.actor.findUnique({
               where: { name: actorName },
             });
-
             if (!actor) {
               actor = await prisma.actor.create({
-                data: {
-                  name: actorName,
-                  countryId: country.id, // Sertakan countryId untuk relasi
-                },
+                data: { name: actorName, countryId: country.id },
               });
             }
             return { actorId: actor.id };
@@ -53,7 +45,7 @@ const addNewDrama = async (dramaData) => {
         )
       : [];
 
-    // Buat drama baru dengan relasi genres dan actors
+    // Buat drama baru dengan status default 0 (unapprove) jika tidak disediakan
     const newDrama = await prisma.drama.create({
       data: {
         title: dramaData.title,
@@ -67,26 +59,13 @@ const addNewDrama = async (dramaData) => {
         posterUrl: dramaData.posterUrl || null,
         rating: parseFloat(dramaData.rating) || null,
         duration: parseInt(dramaData.duration) || null,
+        status: dramaData.status !== undefined ? dramaData.status : 0, // Set default status to 0
         genres:
-          genreIds.length > 0
-            ? {
-                createMany: {
-                  data: genreIds,
-                },
-              }
-            : undefined, // Jika tidak ada genre, jangan tambahkan apa-apa
+          genreIds.length > 0 ? { createMany: { data: genreIds } } : undefined,
         actors:
-          actorIds.length > 0
-            ? {
-                createMany: {
-                  data: actorIds,
-                },
-              }
-            : undefined, // Jika tidak ada aktor, jangan tambahkan apa-apa
+          actorIds.length > 0 ? { createMany: { data: actorIds } } : undefined,
       },
     });
-
-    console.log("Drama created successfully:", newDrama);
     return newDrama;
   } catch (err) {
     console.error("Error creating drama:", err);
@@ -94,20 +73,16 @@ const addNewDrama = async (dramaData) => {
   }
 };
 
-// Fungsi untuk mengambil semua drama beserta relasi genre dan aktor
 const getAllDramas = async () => {
   try {
     const dramas = await prisma.drama.findMany({
       include: {
-        genres: {
-          include: { genre: true }, // Include genre details
-        },
-        actors: {
-          include: { actor: true }, // Include actor details
-        },
+        genres: { include: { genre: true } },
+        actors: { include: { actor: true } },
+        country: true,
+        reviews: true,
       },
     });
-    console.log("Fetched all dramas:", dramas);
     return dramas;
   } catch (err) {
     console.error("Error fetching dramas:", err);
@@ -115,27 +90,17 @@ const getAllDramas = async () => {
   }
 };
 
-// Fungsi untuk mengambil detail drama berdasarkan ID
 const getDramaById = async (id) => {
   try {
     const drama = await prisma.drama.findUnique({
       where: { id },
       include: {
-        genres: {
-          include: { genre: true }, // Include genre details
-        },
-        actors: {
-          include: { actor: true }, // Include actor details
-        },
-        reviews: true, // Tambahkan relasi review ke drama
+        genres: { include: { genre: true } },
+        actors: { include: { actor: true } },
+        reviews: true,
       },
     });
-
-    if (!drama) {
-      throw new Error("Drama not found");
-    }
-
-    console.log("Fetched drama by ID:", drama);
+    if (!drama) throw new Error("Drama not found");
     return drama;
   } catch (err) {
     console.error("Error fetching drama by ID:", err);
@@ -146,10 +111,9 @@ const getDramaById = async (id) => {
 const getReviewsByDramaId = async (dramaId) => {
   try {
     const reviews = await prisma.review.findMany({
-      where: { dramaId: dramaId }, // dramaId sudah dipastikan integer
+      where: { dramaId },
       orderBy: { createdAt: "desc" },
     });
-    console.log("Fetched reviews for drama:", reviews);
     return reviews;
   } catch (err) {
     console.error("Error fetching reviews:", err);
@@ -157,22 +121,68 @@ const getReviewsByDramaId = async (dramaId) => {
   }
 };
 
-// Fungsi untuk menambahkan review baru ke database
 const addReview = async (reviewData) => {
   try {
     const newReview = await prisma.review.create({
-      data: {
-        author: reviewData.author,
-        content: reviewData.content,
-        rating: reviewData.rating,
-        dramaId: reviewData.dramaId, // ID Drama terkait
-      },
+      data: reviewData,
     });
-    console.log("Review created successfully:", newReview);
     return newReview;
   } catch (err) {
     console.error("Error creating review:", err);
     throw err;
+  }
+};
+
+const approveDrama = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // Receive the new status from the request body
+
+  try {
+    const updatedDrama = await prisma.drama.update({
+      where: { id: parseInt(id) },
+      data: { status },
+    });
+    res.json(updatedDrama);
+  } catch (error) {
+    console.error("Error toggling approval status:", error);
+    res.status(500).json({ error: "Failed to toggle approval status" });
+  }
+};
+
+// Fungsi delete drama
+const deleteDrama = async (id) => {
+  try {
+    await prisma.drama.delete({
+      where: { id: parseInt(id) },
+    });
+  } catch (error) {
+    console.error("Error deleting drama:", error);
+    throw error;
+  }
+};
+
+const getAllCountries = async () => {
+  return await prisma.country.findMany();
+};
+
+const addCountry = async (name) => {
+  const existingCountry = await prisma.country.findUnique({
+    where: { name },
+  });
+  if (existingCountry) {
+    throw new Error("Country already exists");
+  }
+  return await prisma.country.create({ data: { name } });
+};
+
+const deleteCountry = async (id) => {
+  try {
+    return await prisma.country.delete({
+      where: { id: parseInt(id) },
+    });
+  } catch (error) {
+    console.error("Error deleting country:", error);
+    throw error;
   }
 };
 
@@ -182,5 +192,9 @@ module.exports = {
   getDramaById,
   getReviewsByDramaId,
   addReview,
+  approveDrama,
+  deleteDrama,
+  getAllCountries,
+  addCountry,
+  deleteCountry
 };
-

@@ -1,45 +1,37 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model Drama { 
-  id              Int      @id @default(autoincrement())
-  title           String
+model Drama {
+  id             Int      @id @default(autoincrement())
+  title          String
   alternativeTitle String?
-  year            Int
-  country         Country  @relation(fields: [countryId], references: [id])
-  countryId       Int
-  synopsis        String
-  availability    String
-  linkTrailer     String?
-  award           String?
-  posterUrl       String?
-  rating          Float?
-  duration        Int?
-  genres          DramaToGenres[]  
-  actors          ActorToDrama[]   // Relasi many-to-many dengan Actor melalui ActorToDrama
-  reviews         Review[]         // Relasi balik ke Review
-  createdAt       DateTime @default(now())
+  year           Int
+  countryId      Int
+  synopsis       String
+  availability   String?
+  linkTrailer    String?
+  award          String?
+  posterUrl      String?
+  rating         Float?
+  duration       Int?
+  status         Int      @default(0) // Ubah menjadi Int dengan nilai default 0
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  country        Country  @relation(fields: [countryId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
+  genres         DramaToGenres[]
+  actors         ActorToDrama[]
+  reviews        Review[]
 }
-
 
 model Country {
   id      Int      @id @default(autoincrement())
   name    String   @unique
-  dramas  Drama[]
-  actors  Actor[]
+  dramas  Drama[]  @relation(onDelete: Cascade) // Tambahkan onDelete: Cascade
+  actors  Actor[]  @relation(onDelete: Cascade) // Tambahkan onDelete: Cascade
 }
 
 model Actor {
   id        Int      @id @default(autoincrement())
   name      String
   urlPhoto  String?  // URL untuk foto aktor (opsional)
-  country   Country  @relation(fields: [countryId], references: [id]) 
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
   countryId Int
   dramas    ActorToDrama[]
 }
@@ -76,7 +68,6 @@ model Review {
   content   String
   rating    Float?
   createdAt DateTime @default(now())
-  drama     Drama    @relation(fields: [dramaId], references: [id])
+  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade) // Tambahkan onDelete: Cascade
   dramaId   Int
 }
-

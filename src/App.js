@@ -17,11 +17,11 @@ const App = () => {
     <div className="App">
       <Router>
         <Routes>
-          {/* Rute untuk client-side */}
-          <Route path="/*" element={<ClientLayout />} />
-
           {/* Rute untuk admin-side */}
           <Route path="/admin/*" element={<AppAdmin />} />
+
+          {/* Rute untuk client-side */}
+          <Route path="/*" element={<ClientLayout />} />
         </Routes>
       </Router>
     </div>
@@ -36,7 +36,7 @@ const ClientLayout = () => {
       <div className="main__content">
         <div className="page__content">
           <Routes>
-            <Route index element={<Home />} />
+            <Route index element={<Home />} /> {/* Root / diarahkan ke Home */}
             <Route path="movie/:id" element={<Movie />} />
             <Route path="movies/:type" element={<MovieList />} />
             <Route path="search" element={<SearchResults />} />

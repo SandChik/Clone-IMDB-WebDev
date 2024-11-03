@@ -23,7 +23,7 @@
   max-width: 600px;
   color: white;
   margin-top: 30px;
-  margin-bottom: -300px;
+  margin-bottom: -500px;
   box-sizing: border-box;
 }
 
@@ -80,7 +80,7 @@
   background-color: #e0b800;
 }
 
-/* Gaya untuk container bintang */
+/* Star rating styles */
 .reviewForm__stars {
   display: flex;
   gap: 10px;
@@ -123,9 +123,88 @@
   color: #FFD700;
 }
 
-.reviewForm__star-wrapper .fa-star,
-.reviewForm__star-wrapper .fa-star-half-alt {
-  position: absolute;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.modal-content {
+  width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #141414; /* Dark background for the modal */
+  color: #FFD700; /* Gold text color */
+  text-align: center;
+  position: relative;
+  animation: popUp 0.5s ease-out forwards;
+}
+
+.modal-content h2 {
+  margin-top: 20px; /* Added space between checkmark and text */
+  margin-bottom: 20px;
+}
+
+.checkmark {
+  color: #FFD700;
+  font-size: 46px;
+  margin-bottom: 10px; /* Added space below checkmark */
+  animation: rotateCheckmark 0.8s ease-in-out forwards;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #FFD700;
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: #e0b800;
+}
+
+/* Animation for the popup appearance */
+@keyframes popUp {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation for the checkmark rotation */
+@keyframes rotateCheckmark {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+/* Animation for the fade-in of the overlay */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import "./reviewForm.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ReviewForm = ({ dramaId, onReviewSubmit }) => {
   const [name, setName] = useState("");
-  const [rating, setRating] = useState(0); // Menggunakan skala 0.5
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && rating && comment) {
       const reviewData = {
         author: name,
-        rating: rating * 2, // Kalikan rating dengan 2 untuk rentang 0-10
+        rating: rating * 2, // Kalikan rating dengan 2 untuk skala 0-10
         content: comment,
         dramaId: dramaId,
       };
@@ -31,20 +34,23 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
           setName("");
           setRating(0);
           setComment("");
-          alert("Review successfully submitted!"); // Tampilkan alert saat berhasil
+          setModalOpen(true);
+          setTimeout(() => {
+            setModalOpen(false);
+            window.location.reload(); // Refresh halaman setelah submit berhasil
+          }, 2500);
         } else {
-          alert("Failed to submit review.");
+          toast.error("Failed to submit review.");
         }
       } catch (error) {
         console.error("Error submitting review:", error);
-        alert("An error occurred while submitting the review.");
+        toast.error("An error occurred while submitting the review.");
       }
     } else {
-      alert("Please fill in all fields");
+      toast.warn("Please fill in all fields");
     }
   };
 
-  // Fungsi untuk menghitung nilai rating berdasarkan posisi klik
   const handleStarClick = (event, index) => {
     const rect = event.target.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
@@ -113,6 +119,21 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
           </button>
         </form>
       </div>
+
+      {/* Modal for submission success */}
+      {modalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content animate-popup">
+            <span className="close-modal" onClick={() => setModalOpen(false)}>
+              &times;
+            </span>
+            <i className="fas fa-check-circle checkmark animate-check"></i>
+            <h2>Review berhasil dikirim!</h2>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer />
     </div>
   );
 };

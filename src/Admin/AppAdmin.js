@@ -1,21 +1,22 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
-import Countries from "./pages/Countries";
-import Awards from "./pages/Awards";
-import Genres from "./pages/Genres";
-import Comments from "./pages/Comments";
-import Users from "./pages/Users";
-import Actors from "./pages/Actors";
-import Dramas from "./pages/Dramas";
-import ValidateDramas from "./pages/ValidateDramas"; // Tambahkan ini untuk halaman Validasi
-import InputNewDrama from "./pages/InputNewDrama"; // Tambahkan ini untuk halaman Input Drama Baru
+import Sidebar from "./components/Sidebar"; // Komponen Sidebar untuk navigasi
+import Dashboard from "./pages/Dashboard"; // Dashboard page
+import Countries from "./pages/Countries"; // Countries page
+import Awards from "./pages/Awards"; // Awards page
+import Genres from "./pages/Genres"; // Genres page
+import Comments from "./pages/Comments"; // Comments page
+import Users from "./pages/Users"; // Users page
+import Actors from "./pages/Actors"; // Actors page
+import ValidateDramas from "./pages/ValidateDramas"; // Halaman untuk validasi drama
+import InputNewDrama from "./pages/InputNewDrama"; // Halaman untuk input drama baru
 
 const AppAdmin = () => {
   return (
     <div style={{ display: "flex" }}>
+      {/* Sidebar berada di sebelah kiri */}
       <Sidebar />
+      {/* Bagian konten utama */}
       <div style={{ flex: 1, padding: "20px" }}>
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -25,12 +26,8 @@ const AppAdmin = () => {
           <Route path="/comments" element={<Comments />} />
           <Route path="/users" element={<Users />} />
           <Route path="/actors" element={<Actors />} />
-          <Route path="/dramas" element={<Dramas />} />{" "}
-          {/* Rute utama Dramas */}
           <Route path="/dramas/validate" element={<ValidateDramas />} />{" "}
-          {/* Rute untuk validasi */}
           <Route path="/dramas/input" element={<InputNewDrama />} />{" "}
-          {/* Rute untuk input drama baru */}
         </Routes>
       </div>
     </div>

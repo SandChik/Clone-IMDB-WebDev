@@ -15,7 +15,7 @@
 
 .posterImage__overlay {
     position: absolute;
-    padding: 2  rem;
+    padding: 2rem;
     bottom: 0;
     height: 70%;
     display: flex;
@@ -59,20 +59,24 @@
     width: 80%;
 }
 
+.movie__list-container {
+    padding: 20px;
+}
+
 .list__cards {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(7, 1fr);
+    gap: 20px;
+    justify-content: center;
 }
 
-.home {
-  display: flex;
+.list__cards .movie__card {
+    width: 100%;
+    max-width: 150px;
+    margin: auto;
 }
 
-.home__content {
-  margin-left: 200px; /* Sesuaikan dengan ukuran sidebar */
-  padding: 20px;
-  width: 100%;
-}
 
 
 @media (max-width: 768px) {
@@ -104,6 +108,10 @@
         margin-top: 0.5rem;
         width: 100%;
     }
+
+    .list__cards {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
 }
 
 @media (max-width: 576px) {
@@ -130,6 +138,8 @@
         margin-top: 0.5rem;
         width: 100%; 
     }
+
+    .list__cards {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
 }
-
-

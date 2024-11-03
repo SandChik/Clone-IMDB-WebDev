@@ -1,9 +1,0 @@
--- AlterTable
-ALTER TABLE "Drama" ADD COLUMN     "duration" INTEGER,
-ADD COLUMN     "photoUrl" TEXT,
-ADD COLUMN     "rating" DOUBLE PRECISION,
-ALTER COLUMN "alternativeTitle" DROP NOT NULL,
-ALTER COLUMN "linkTrailer" DROP NOT NULL,
-ALTER COLUMN "award" DROP NOT NULL,
-ALTER COLUMN "posterUrl" DROP NOT NULL,
-ALTER COLUMN "posterUrl" DROP DEFAULT;
