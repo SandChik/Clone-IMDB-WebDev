@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -9,9 +9,96 @@ import {
   TableCell,
   TableBody,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
+import axios from "axios";
 
 const Genres = () => {
+  const [genres, setGenres] = useState([]);
+  const [genreName, setGenreName] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/genres");
+      const sortedGenres = response.data.sort((a, b) => a.id - b.id); // Sort genres by id in ascending order
+      setGenres(sortedGenres);
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!genreName) {
+      alert("Please fill in the genre name.");
+      return;
+    }
+
+    try {
+      if (editId) {
+        await axios.put(`http://localhost:5000/api/genres/${editId}`, {
+          name: genreName,
+        });
+
+        setGenres((prevGenres) =>
+          prevGenres
+            .map((genre) =>
+              genre.id === editId ? { ...genre, name: genreName } : genre
+            )
+            .sort((a, b) => a.id - b.id)
+        );
+        setEditId(null);
+      } else {
+        const response = await axios.post("http://localhost:5000/api/genres", {
+          name: genreName,
+        });
+
+        setGenres((prevGenres) =>
+          [...prevGenres, response.data].sort((a, b) => a.id - b.id)
+        );
+      }
+
+      setGenreName("");
+      setOpenDialog(false);
+    } catch (error) {
+      console.error("Error submitting genre:", error);
+    }
+  };
+
+  const handleEdit = (genre) => {
+    setEditId(genre.id);
+    setGenreName(genre.name);
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this genre?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/genres/${id}`);
+        setGenres((prevGenres) =>
+          prevGenres.filter((genre) => genre.id !== id)
+        );
+      } catch (error) {
+        console.error("Error deleting genre:", error);
+      }
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setEditId(null);
+    setGenreName("");
+  };
+
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
       <Typography
@@ -21,33 +108,41 @@ const Genres = () => {
         Manage Genres
       </Typography>
 
-      {/* Input Fields dan Tombol Submit */}
-      <Box sx={{ display: "flex", gap: 2, mb: 3, justifyContent: "center" }}>
+      {/* Search Field and Add Genre Button */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mb: 3,
+          width: "80%",
+          mx: "auto",
+        }}
+      >
         <TextField
-          label="Genre"
+          label="Search Genre"
           variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
-            borderColor: "#00BFFF",
             width: 300,
           }}
         />
         <Button
           variant="contained"
+          onClick={() => setOpenDialog(true)}
           sx={{
             bgcolor: "#1E90FF",
             "&:hover": { bgcolor: "#00BFFF" },
             fontWeight: "bold",
-            height: "fit-content",
           }}
         >
-          Submit
+          Add Genre
         </Button>
       </Box>
 
-      {/* Tabel untuk Genres */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -82,7 +177,7 @@ const Genres = () => {
               Genre
             </TableCell>
             <TableCell
-              align="center"    
+              align="center"
               sx={{
                 color: "#fff",
                 bgcolor: "#1E90FF",
@@ -95,44 +190,91 @@ const Genres = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {[
-            { id: 1, genre: "Romance" },
-            { id: 2, genre: "Drama" },
-            { id: 3, genre: "Action" },
-          ].map((genre) => (
-            <TableRow key={genre.id}>
-              <TableCell
-                align="left"
-                sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
-              >
-                {genre.id}
-              </TableCell>
-              <TableCell
-                align="left"
-                sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
-              >
-                {genre.genre}
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  color: "#FF69B4",
-                  bgcolor: "#2a2a2a",
-                  fontSize: "1rem",
-                }}
-              >
-                <Button sx={{ color: "#FF69B4", fontSize: "0.9rem" }}>
-                  Rename
-                </Button>{" "}
-                |{" "}
-                <Button sx={{ color: "#FF69B4", fontSize: "0.9rem" }}>
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {genres
+            .filter((genre) =>
+              genre.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((genre) => (
+              <TableRow key={genre.id}>
+                <TableCell
+                  align="left"
+                  sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
+                >
+                  {genre.id}
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" }}
+                >
+                  {genre.name}
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{
+                    color: "#FF69B4",
+                    bgcolor: "#2a2a2a",
+                    fontSize: "1rem",
+                  }}
+                >
+                  <Button
+                    onClick={() => handleEdit(genre)}
+                    sx={{ color: "#FF69B4", fontSize: "0.9rem" }}
+                  >
+                    Edit
+                  </Button>{" "}
+                  |{" "}
+                  <Button
+                    onClick={() => handleDelete(genre.id)}
+                    sx={{ color: "#FF69B4", fontSize: "0.9rem" }}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
+
+      {/* Dialog for Edit/Add Genre */}
+      <Dialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        PaperProps={{
+          sx: { bgcolor: "#121212", color: "white" },
+        }}
+      >
+        <DialogTitle
+          sx={{ color: "#1E90FF", textAlign: "center", fontWeight: "bold" }}
+        >
+          {editId ? "Edit Genre" : "Add Genre"}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Genre"
+            variant="outlined"
+            value={genreName}
+            onChange={(e) => setGenreName(e.target.value)}
+            fullWidth
+            sx={{
+              mt: 2,
+              input: { color: "white" },
+              label: { color: "#fff" },
+              backgroundColor: "#2c2c2c",
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center" }}>
+          <Button onClick={handleDialogClose} sx={{ color: "#FF69B4" }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            sx={{ bgcolor: "#1E90FF", color: "white" }}
+          >
+            {editId ? "Save" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

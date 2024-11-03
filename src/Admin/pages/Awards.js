@@ -9,8 +9,23 @@ import {
   TableCell,
   TableBody,
   Typography,
+  Modal,
 } from "@mui/material";
 import axios from "axios";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "#1a1a1a",
+  color: "#e0e0e0",
+  boxShadow: 24,
+  p: 4,
+  maxWidth: 600,
+  width: "90%",
+  borderRadius: "8px",
+};
 
 const Awards = () => {
   const [awards, setAwards] = useState([]);
@@ -18,6 +33,8 @@ const Awards = () => {
   const [countryId, setCountryId] = useState("");
   const [award, setAward] = useState("");
   const [editId, setEditId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
   const tableHeaders = ["ID", "Country", "Award", "Actions"];
 
@@ -26,17 +43,15 @@ const Awards = () => {
     fetchCountries();
   }, []);
 
-const fetchAwards = async () => {
-  try {
-    const response = await axios.get("http://localhost:5000/api/awards");
-    // Sort data berdasarkan 'id' agar urutannya tetap konsisten
-    const sortedAwards = response.data.sort((a, b) => a.id - b.id);
-    setAwards(sortedAwards);
-  } catch (error) {
-    console.error("Error fetching awards:", error);
-  }
-};
-
+  const fetchAwards = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/awards");
+      const sortedAwards = response.data.sort((a, b) => a.id - b.id); // Sorting ascending by ID
+      setAwards(sortedAwards);
+    } catch (error) {
+      console.error("Error fetching awards:", error);
+    }
+  };
 
   const fetchCountries = async () => {
     try {
@@ -45,6 +60,17 @@ const fetchAwards = async () => {
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
+  };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditId(null);
+    setCountryId("");
+    setAward("");
   };
 
   const handleSubmit = async () => {
@@ -68,9 +94,8 @@ const fetchAwards = async () => {
           name: award,
         });
       }
-      setCountryId("");
-      setAward("");
-      fetchAwards();
+      fetchAwards(); // Refresh data
+      handleCloseModal(); // Close modal
     } catch (error) {
       console.error("Error submitting award:", error);
     }
@@ -82,6 +107,7 @@ const fetchAwards = async () => {
       award.countries && award.countries.length > 0 ? award.countries[0].id : ""
     );
     setAward(award.name);
+    handleOpenModal();
   };
 
   const handleDelete = async (id) => {
@@ -95,6 +121,10 @@ const fetchAwards = async () => {
     }
   };
 
+  const filteredAwards = awards.filter((award) =>
+    award.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
       <Typography
@@ -104,57 +134,43 @@ const fetchAwards = async () => {
         Manage Awards
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 3, justifyContent: "center" }}>
+      {/* Search Field and Add Award Button */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mb: 2,
+          width: "80%",
+          mx: "auto",
+        }}
+      >
         <TextField
-          select
-          label="Country"
+          label="Search Award"
           variant="outlined"
-          value={countryId}
-          onChange={(e) => setCountryId(e.target.value)}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           sx={{
             input: { color: "white" },
             label: { color: "#fff" },
             backgroundColor: "#2c2c2c",
-            width: 200,
-          }}
-          SelectProps={{
-            native: true,
-          }}
-        >
-          <option value="" disabled>
-          </option>
-          {countries.map((country) => (
-            <option key={country.id} value={country.id}>
-              {country.name}
-            </option>
-          ))}
-        </TextField>
-        <TextField
-          label="Award"
-          variant="outlined"
-          value={award}
-          onChange={(e) => setAward(e.target.value)}
-          sx={{
-            input: { color: "white" },
-            label: { color: "#fff" },
-            backgroundColor: "#2c2c2c",
+            borderColor: "#00BFFF",
             width: 300,
           }}
         />
         <Button
           variant="contained"
-          onClick={handleSubmit}
+          onClick={handleOpenModal}
           sx={{
             bgcolor: "#1E90FF",
             "&:hover": { bgcolor: "#00BFFF" },
             fontWeight: "bold",
-            height: "fit-content",
           }}
         >
-          {editId ? "Update" : "Submit"}
+          Add Award
         </Button>
       </Box>
 
+      {/* Tabel Award */}
       <Table
         sx={{
           bgcolor: "#1c1c1c",
@@ -183,7 +199,7 @@ const fetchAwards = async () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {awards.map((award) => (
+          {filteredAwards.map((award) => (
             <TableRow key={award.id}>
               <TableCell
                 align="left"
@@ -227,6 +243,66 @@ const fetchAwards = async () => {
           ))}
         </TableBody>
       </Table>
+
+      {/* Modal for Add/Edit Award */}
+      <Modal open={openModal} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <Typography
+            variant="h6"
+            sx={{ color: "#4da8da", mb: 3, textAlign: "center" }}
+          >
+            {editId ? "Edit Award" : "Add Award"}
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              select
+              label="Country"
+              variant="outlined"
+              value={countryId}
+              onChange={(e) => setCountryId(e.target.value)}
+              sx={{
+                input: { color: "white" },
+                label: { color: "#fff" },
+                backgroundColor: "#2c2c2c",
+              }}
+              SelectProps={{
+                native: true,
+              }}
+            >
+              <option value="" disabled>
+                Select Country
+              </option>
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
+            </TextField>
+            <TextField
+              label="Award"
+              variant="outlined"
+              value={award}
+              onChange={(e) => setAward(e.target.value)}
+              sx={{
+                input: { color: "white" },
+                label: { color: "#fff" },
+                backgroundColor: "#2c2c2c",
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              sx={{
+                bgcolor: "#1E90FF",
+                "&:hover": { bgcolor: "#00BFFF" },
+                fontWeight: "bold",
+              }}
+            >
+              {editId ? "Update Award" : "Add Award"}
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };

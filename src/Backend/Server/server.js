@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const awardRoutes = require("./awardRoutes");
+const genreRoutes = require("./genreRoutes");
+const actorRoutes = require("./actorRoutes");
 
 const {
   addNewDrama,
@@ -25,6 +27,8 @@ const port = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(awardRoutes);
+app.use("/api", genreRoutes);
+app.use("/api/actors", actorRoutes);
 
 // Route untuk menambahkan drama
 app.post("/api/dramas", async (req, res) => {

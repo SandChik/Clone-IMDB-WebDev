@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -9,64 +9,113 @@ import {
   TableCell,
   TableBody,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
 } from "@mui/material";
-import { useDropzone } from "react-dropzone";
-
-// Reusable styles
-const tableCellStyle = {
-  color: "#fff",
-  bgcolor: "#2a2a2a",
-  fontSize: "1rem",
-};
-
-const headerCellStyle = {
-  color: "#fff",
-  bgcolor: "#1E90FF",
-  fontWeight: "bold",
-  fontSize: "1.1rem",
-};
+import axios from "axios";
 
 const Actors = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  // Dropzone logic
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      setSelectedFile(
-        Object.assign(acceptedFiles[0], {
-          preview: URL.createObjectURL(acceptedFiles[0]),
-        })
-      );
-    },
+  const [actors, setActors] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    countryId: "",
+    urlPhoto: "",
   });
+  const [editId, setEditId] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Data for the table
-  const actors = [
-    {
-      id: 1,
-      country: "Japan",
-      name: "Takuya Kimura",
-      birthDate: "19 Desember 1975",
-      photo: "img1.jpg",
-    },
-    {
-      id: 2,
-      country: "Japan",
-      name: "Yuko Takeuchi",
-      birthDate: "19 Oktober 1977",
-      photo: "img2.jpg",
-    },
-  ];
+  useEffect(() => {
+    fetchActors();
+    fetchCountries();
+  }, []);
 
-  const tableHeaders = [
-    "ID",
-    "Country",
-    "Actor Name",
-    "Birth Date",
-    "Photos",
-    "Actions",
-  ];
+  const fetchActors = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/actors");
+      const sortedActors = response.data.sort((a, b) => a.id - b.id); // Urutkan ascending berdasarkan id
+      setActors(sortedActors);
+    } catch (error) {
+      console.error("Error fetching actors:", error);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/countries");
+      setCountries(response.data);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.countryId || !formData.urlPhoto) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      if (editId) {
+        await axios.put(`http://localhost:5000/api/actors/${editId}`, formData);
+        setActors((prevActors) =>
+          prevActors.map((actor) =>
+            actor.id === editId ? { ...actor, ...formData } : actor
+          )
+        );
+      } else {
+        const response = await axios.post(
+          "http://localhost:5000/api/actors",
+          formData
+        );
+        setActors((prevActors) =>
+          [...prevActors, response.data].sort((a, b) => a.id - b.id)
+        ); // Urutkan setelah menambahkan
+      }
+      setFormData({ name: "", countryId: "", urlPhoto: "" });
+      setEditId(null);
+      setOpenDialog(false);
+    } catch (error) {
+      console.error("Error submitting actor:", error);
+    }
+  };
+
+  const handleEdit = (actor) => {
+    setEditId(actor.id);
+    setFormData({
+      name: actor.name,
+      countryId: actor.countryId,
+      urlPhoto: actor.urlPhoto,
+    });
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this actor?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/actors/${id}`);
+        setActors((prevActors) =>
+          prevActors.filter((actor) => actor.id !== id)
+        );
+      } catch (error) {
+        console.error("Error deleting actor:", error);
+      }
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setFormData({ name: "", countryId: "", urlPhoto: "" });
+    setEditId(null);
+  };
+
+  const filteredActors = actors.filter((actor) =>
+    actor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>
@@ -77,136 +126,212 @@ const Actors = () => {
         Manage Actors
       </Typography>
 
-      {/* Input Fields dan Tombol Submit */}
+      {/* Search Field and Add Button */}
       <Box
         sx={{
           display: "flex",
           gap: 2,
           mb: 3,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: "space-between",
+          maxWidth: "90%",
+          mx: "auto",
         }}
       >
         <TextField
-          label="Country"
+          label="Search Actor"
           variant="outlined"
-          sx={textFieldStyle(200)}
+          sx={{ ...textFieldStyle, width: "300px" }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <TextField
-          label="Actor Name"
-          variant="outlined"
-          sx={textFieldStyle(250)}
-        />
-        <TextField
-          label="Birth Date"
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          variant="outlined"
-          sx={textFieldStyle(200)}
-        />
-
-        {/* Drag-and-Drop Area for File Upload */}
-        <Box {...getRootProps()} sx={dropzoneStyle}>
-          <input {...getInputProps()} />
-          <Typography variant="body2">
-            {selectedFile
-              ? "File Selected: " + selectedFile.name
-              : "Drag 'n' drop file here"}
-          </Typography>
-        </Box>
-
-        <Button variant="contained" sx={submitButtonStyle}>
-          Submit
+        <Button
+          variant="contained"
+          onClick={() => setOpenDialog(true)}
+          sx={submitButtonStyle}
+        >
+          Add Actor
         </Button>
       </Box>
 
-      {/* Preview the selected image */}
-      {selectedFile && (
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-          <img
-            src={selectedFile.preview}
-            alt="Preview"
-            style={{ maxWidth: "300px", borderRadius: "5px" }}
-          />
-        </Box>
-      )}
-
-      {/* Tabel untuk Actors */}
+      {/* Actor Table */}
       <Table sx={tableStyle}>
         <TableHead>
           <TableRow>
-            {tableHeaders.map((header) => (
-              <TableCell key={header} align="left" sx={headerCellStyle}>
-                {header}
-              </TableCell>
-            ))}
+            {["ID", "Country", "Actor Name", "Photo", "Actions"].map(
+              (header) => (
+                <TableCell key={header} align="center" sx={headerCellStyle}>
+                  {header}
+                </TableCell>
+              )
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
-          {actors.map((actor) => (
+          {filteredActors.map((actor) => (
             <TableRow key={actor.id}>
-              <TableCell align="left" sx={tableCellStyle}>
+              <TableCell align="center" sx={tableCellStyle}>
                 {actor.id}
               </TableCell>
-              <TableCell align="left" sx={tableCellStyle}>
-                {actor.country}
+              <TableCell
+                align="center"
+                sx={{ ...tableCellStyle, fontWeight: "bold" }}
+              >
+                {countries.find((country) => country.id === actor.countryId)
+                  ?.name || "Unknown"}
               </TableCell>
-              <TableCell align="left" sx={tableCellStyle}>
+              <TableCell align="center" sx={tableCellStyle}>
                 {actor.name}
               </TableCell>
-              <TableCell align="left" sx={tableCellStyle}>
-                {actor.birthDate}
-              </TableCell>
-              <TableCell align="left" sx={tableCellStyle}>
+              <TableCell align="center" sx={tableCellStyle}>
                 <Box
                   component="img"
-                  src={actor.photo}
+                  src={actor.urlPhoto}
                   alt={actor.name}
-                  sx={{ width: 50, height: 50, borderRadius: "5px" }}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: "5px",
+                    objectFit: "cover",
+                  }}
                 />
               </TableCell>
-              <TableCell
-                align="left"
-                sx={{ color: "#FF69B4", bgcolor: "#2a2a2a", fontSize: "1rem" }}
-              >
-                <Button sx={actionButtonStyle}>Edit</Button> |{" "}
-                <Button sx={actionButtonStyle}>Delete</Button>
+              <TableCell align="center" sx={tableCellStyle}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <Button
+                    onClick={() => handleEdit(actor)}
+                    sx={{ ...actionButtonStyle, fontSize: "0.8rem" }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => handleDelete(actor.id)}
+                    sx={{ ...actionButtonStyle, fontSize: "0.8rem" }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Dialog for Add/Edit */}
+      <Dialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        PaperProps={{
+          sx: {
+            bgcolor: "#121212",
+            color: "white",
+            width: "400px",
+            mx: "auto",
+            p: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#1E90FF",
+            textAlign: "center",
+            fontWeight: "bold",
+            mb: 2,
+          }}
+        >
+          {editId ? "Edit Actor" : "Add Actor"}
+        </DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
+          <TextField
+            label="Actor Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            fullWidth
+            sx={{
+              backgroundColor: "#2c2c2c",
+              input: { color: "white" },
+              label: { color: "#fff" },
+            }}
+          />
+          <TextField
+            select
+            label="Country"
+            value={formData.countryId}
+            onChange={(e) =>
+              setFormData({ ...formData, countryId: e.target.value })
+            }
+            fullWidth
+            sx={{
+              backgroundColor: "#2c2c2c",
+              label: { color: "#fff" },
+              input: { color: "white" },
+            }}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: {
+                  sx: {
+                    bgcolor: "#2c2c2c",
+                    "& .MuiMenuItem-root": { color: "white" },
+                  },
+                },
+              },
+            }}
+          >
+            {countries.map((country) => (
+              <MenuItem key={country.id} value={country.id}>
+                {country.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label="Photo URL"
+            value={formData.urlPhoto}
+            onChange={(e) =>
+              setFormData({ ...formData, urlPhoto: e.target.value })
+            }
+            fullWidth
+            sx={{
+              backgroundColor: "#2c2c2c",
+              input: { color: "white" },
+              label: { color: "#fff" },
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", mt: 2 }}>
+          <Button onClick={handleDialogClose} sx={{ color: "#FF69B4" }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            sx={{ bgcolor: "#1E90FF", color: "white", fontWeight: "bold" }}
+          >
+            {editId ? "Save" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
-// Styling helpers
-const textFieldStyle = (width) => ({
+// Styles
+const textFieldStyle = {
   input: { color: "white" },
   label: { color: "#fff" },
   backgroundColor: "#2c2c2c",
-  borderColor: "#00BFFF",
-  width,
-});
-
-const dropzoneStyle = {
-  border: "2px dashed #1E90FF",
-  borderRadius: "5px",
-  bgcolor: "#2c2c2c",
-  color: "#fff",
-  padding: "10px",
-  width: 200,
-  textAlign: "center",
-  cursor: "pointer",
+  width: 300,
 };
-
 const submitButtonStyle = {
   bgcolor: "#1E90FF",
   "&:hover": { bgcolor: "#00BFFF" },
   fontWeight: "bold",
-  height: "fit-content",
 };
-
 const tableStyle = {
   bgcolor: "#1c1c1c",
   borderRadius: "10px",
@@ -214,7 +339,13 @@ const tableStyle = {
   margin: "0 auto",
   mt: 2,
 };
-
+const headerCellStyle = {
+  color: "#fff",
+  bgcolor: "#1E90FF",
+  fontWeight: "bold",
+  fontSize: "1.1rem",
+};
+const tableCellStyle = { color: "#fff", bgcolor: "#2a2a2a", fontSize: "1rem" };
 const actionButtonStyle = { color: "#FF69B4", fontSize: "0.9rem" };
 
 export default Actors;

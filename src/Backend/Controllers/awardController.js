@@ -61,7 +61,6 @@ const createAward = async (req, res) => {
   }
 };
 
-
 // awardController.js
 const updateAward = async (req, res) => {
     const { id } = req.params;  // Pastikan ID diambil dari params
@@ -84,7 +83,6 @@ const updateAward = async (req, res) => {
         res.status(500).json({ message: "Failed to update award", error });
     }
 };
-
 
 // Hapus award berdasarkan ID
 const deleteAward = async (req, res) => {
