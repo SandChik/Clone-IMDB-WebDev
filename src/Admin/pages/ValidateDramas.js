@@ -16,6 +16,7 @@ import {
   Button,
 } from "@mui/material";
 import PreviewValidate from "./PreviewValidate";
+import EditDramaModal from "./EditDramaModal";
 
 const ValidateDramas = () => {
   const [statusFilter, setStatusFilter] = useState("All");
@@ -23,6 +24,7 @@ const ValidateDramas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dramaData, setDramaData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedDrama, setSelectedDrama] = useState(null);
 
   const fetchDramas = async () => {
@@ -61,6 +63,11 @@ const ValidateDramas = () => {
   const handleOpenModal = (drama) => {
     setSelectedDrama(drama);
     setOpenModal(true);
+  };
+
+  const handleOpenEditModal = (drama) => {
+    setSelectedDrama(drama);
+    setOpenEditModal(true);
   };
 
   const handleToggleApproval = async (id, currentStatus) => {
@@ -162,6 +169,8 @@ const ValidateDramas = () => {
               "Drama",
               "Actors",
               "Genres",
+              "Country",
+              "Awards",
               "Synopsis",
               "Poster",
               "Status",
@@ -198,6 +207,12 @@ const ValidateDramas = () => {
                     .join(", ")}
                 </TableCell>
                 <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                  {drama.country?.name || "N/A"}
+                </TableCell>
+                <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                  {drama.awards.map((award) => award.name).join(", ") || "N/A"}
+                </TableCell>
+                <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
                   {drama.synopsis}
                 </TableCell>
                 <TableCell sx={{ bgcolor: "#2a2a2a" }}>
@@ -224,7 +239,7 @@ const ValidateDramas = () => {
                 <TableCell sx={{ color: "#FF69B4", bgcolor: "#2a2a2a" }}>
                   <Button
                     sx={{ color: "#FF69B4" }}
-                    onClick={() => handleOpenModal(drama)}
+                    onClick={() => handleOpenEditModal(drama)}
                   >
                     Edit
                   </Button>{" "}
@@ -240,6 +255,15 @@ const ValidateDramas = () => {
             ))}
         </TableBody>
       </Table>
+
+      {selectedDrama && (
+        <EditDramaModal
+          open={openEditModal}
+          handleClose={() => setOpenEditModal(false)}
+          drama={selectedDrama}
+          refreshData={fetchDramas}
+        />
+      )}
 
       {selectedDrama && (
         <PreviewValidate

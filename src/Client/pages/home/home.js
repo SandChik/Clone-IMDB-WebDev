@@ -64,9 +64,10 @@ const Home = () => {
           ))}
         </Carousel>
       </div>
+
       <div className="movie__list-container">
         <h2 className="list__title">Movie List</h2>
-        <MovieList />
+        <MovieList movies={popularMovies} />
       </div>
     </>
   );

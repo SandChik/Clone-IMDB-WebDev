@@ -130,6 +130,11 @@ const Movie = () => {
                 <span className="movie__releaseDate">
                   {currentMovieDetail.year}
                 </span>
+                {currentMovieDetail && currentMovieDetail.country && (
+                <span className="movie__country">
+                  {currentMovieDetail.country.name}
+                </span>
+                )}
               </div>
               <div className="movie__genres">
                 {currentMovieDetail.genres &&

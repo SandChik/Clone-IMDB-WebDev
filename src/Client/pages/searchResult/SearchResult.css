@@ -1,98 +1,140 @@
 .container {
-    padding: 2rem;
+  padding: 2rem;
+}
+
+h1 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center; /* Agar kartu hasil pencarian selalu berada di tengah */
+}
+
+/* Filter container styles */
+.filter-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center; /* Pusatkan filter */
+  margin-bottom: 2rem;
+}
+
+.filter-container label {
+  font-weight: bold;
+  color: #fff;
+  margin-right: 5px;
+}
+
+/* Dropdown Styling */
+.filter-container select,
+.filter-container input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #333;
+  color: #f9f9f9;
+  width: 200px; /* Lebar tetap untuk konsistensi */
+  transition: border-color 0.3s ease;
+}
+
+/* Hover and Focus Effects */
+.filter-container select:hover,
+.filter-container input:hover,
+.filter-container select:focus,
+.filter-container input:focus {
+  border-color: #1E90FF;
+  outline: none;
+}
+
+/* Styles for Multi-Select Dropdown */
+#genre-select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #333;
+  color: #f9f9f9;
+  width: 120px; /* Sesuaikan lebar dengan input year */
+  height: auto; /* Menghapus batas tinggi tetap */
+  max-height: 150px; /* Batasi tinggi jika diperlukan untuk dropdown panjang */
+}
+
+
+/* Styling for each option in multi-select */
+#genre-select option {
+  padding: 8px;
+  background-color: #444;
+  color: #f9f9f9;
+}
+
+#genre-select option:hover {
+  background-color: #555;
+}
+
+/* Placeholder styling */
+.filter-container input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.no-results {
+  text-align: center;
+  color: #FFD700; /* Warna emas */
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 2px dashed #FFD700; /* Garis tepi emas */
+  border-radius: 10px;
+  background-color: #000000; /* Latar belakang hitam */
+  transition: background-color 0.3s ease; /* Transisi lembut */
+}
+
+.no-results:hover {
+  background-color: #333333; /* Latar belakang saat di-hover */
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) { /* Tablet */
+  .col-3 {
+    flex: 0 0 30%;
+    max-width: 30%;
   }
-  
+}
+
+@media (max-width: 768px) { /* Mobile landscape */
+  .col-3 {
+    flex: 0 0 45%;
+    max-width: 45%;
+  }
+}
+
+@media (max-width: 576px) { /* Mobile portrait */
+  .col-3 {
+    flex: 0 0 90%;
+    max-width: 90%;
+  }
+
   h1 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
+    font-size: 1.5rem;
   }
-  
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: center; /* Agar kartu hasil pencarian selalu berada di tengah */
-  }
-  
-  /* Filter container styles */
-  .filter-header {
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-  
-  .filter-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center; /* Pusatkan filter */
-    margin-bottom: 2rem;
-  }
-  
-  .filter-container label {
-    font-weight: bold;
-  }
-  
+
   .filter-container select,
   .filter-container input {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    width: 200px; /* Lebar tetap untuk konsistensi */
-    margin-right: 1rem;
+    width: 100%;
+    margin-right: 0;
   }
-  
-  /* Responsiveness */
-  @media (max-width: 1024px) { /* Tablet */
-    .col-3 {
-      flex: 0 0 30%; /* Ukuran kolom untuk layar sedang */
-      max-width: 30%;
-    }
-
-  }
-  
-  @media (max-width: 768px) { /* Mobile landscape */
-    .col-3 {
-      flex: 0 0 45%; /* Ukuran kolom untuk layar lebih kecil */
-      max-width: 45%;
-    }
-    
-  }
-  
-  @media (max-width: 576px) { /* Mobile portrait */
-    .col-3 {
-      flex: 0 0 90%; /* Ukuran kolom untuk layar sangat kecil */
-      max-width: 90%;
-    }
-  
-    h1 {
-      font-size: 1.5rem;
-    }
-  
-    .filter-container select,
-    .filter-container input {
-      width: 100%; /* Lebar penuh pada layar kecil */
-      margin-right: 0;
-    }
-
-    .no-results {
-        text-align: center;
-        color: #888;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-top: 2rem;
-        padding: 2rem;
-        border: 2px dashed #ccc; /* Garis tepi dashed untuk visual yang menarik */
-        border-radius: 10px;
-        background-color: #f9f9f9; /* Latar belakang abu-abu muda */
-        transition: background-color 0.3s ease; /* Transisi lembut */
-    }
-      
-      .no-results:hover {
-        background-color: #f0f0f0; /* Mengubah latar belakang saat dihover */
-    }
-  }
-  
+}

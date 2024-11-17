@@ -5,96 +5,176 @@ import {
   ListItemText,
   Collapse,
   IconButton,
-  Tooltip,
+  Menu,
+  MenuItem,
+  Button,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ExpandLess, ExpandMore, Menu as MenuIcon } from "@mui/icons-material";
 
-const Sidebar = () => {
+const Sidebar = ({ setIsAuthenticated }) => {
   const [openDramas, setOpenDramas] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState(null); // State untuk posisi menu
+  const navigate = useNavigate();
 
-  const toggleCollapse = () => setCollapsed(!collapsed);
-  const handleMenuItemClick = () => !collapsed && toggleCollapse();
+  // Fungsi untuk membuka/tutup menu
+  const handleMenuClick = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
 
-  const renderMenuItem = (title, path) => (
-    <ListItem component={Link} to={path} onClick={handleMenuItemClick}>
-      <Tooltip title={title} placement="right">
-        <ListItemText
-          primary={title}
-          style={{ color: "white", display: collapsed ? "none" : "block" }}
-        />
-      </Tooltip>
-    </ListItem>
-  );
+  // Fungsi logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
 
   return (
-    <div
-      style={{
-        width: collapsed ? "60px" : "240px",
-        transition: "width 0.3s ease",
-        background: "#1976d2",
-        minHeight: "100vh",
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
+    <>
+      {/* Header dengan tombol menu dan logout */}
       <div
         style={{
           position: "fixed",
           top: 0,
           left: 0,
-          width: collapsed ? "60px" : "240px",
+          width: "100%",
           background: "#1976d2",
-          zIndex: 10,
+          zIndex: 1000,
           display: "flex",
-          justifyContent: "center",
-          padding: "15px 0",
-          transition: "all 0.3s ease",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 15px", // Mengatur padding agar terlihat lebih rapi
+          boxSizing: "border-box", // Pastikan elemen mengikuti aturan box-sizing
         }}
       >
-        <IconButton onClick={toggleCollapse} style={{ color: "white" }}>
-          <MenuIcon
-            style={{
-              transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
-              transition: "transform 0.3s ease",
-            }}
-          />
+        {/* Tombol Menu */}
+        <IconButton
+          onClick={handleMenuClick}
+          style={{ color: "white" }}
+          aria-controls="main-menu"
+          aria-haspopup="true"
+        >
+          <MenuIcon />
         </IconButton>
+
+        {/* Tombol Logout */}
+        <Button
+          onClick={handleLogout}
+          style={{
+            color: "white",
+            border: "1px solid white",
+            marginRight: "10px", // Tambahkan margin agar tidak terlalu mepet
+          }}
+        >
+          Logout
+        </Button>
       </div>
 
-      <List style={{ width: "100%", marginTop: collapsed ? "50px" : "60px" }}>
-        {!collapsed && (
-          <>
-            <ListItem button onClick={() => setOpenDramas(!openDramas)}>
-              <Tooltip title="Dramas" placement="right">
-                <ListItemText primary="Dramas" style={{ color: "white" }} />
-              </Tooltip>
-              {openDramas ? (
-                <ExpandLess style={{ color: "white" }} />
-              ) : (
-                <ExpandMore style={{ color: "white" }} />
-              )}
+      {/* Dropdown Menu */}
+      <Menu
+        id="main-menu"
+        anchorEl={menuAnchor}
+        keepMounted
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          style: { width: "240px", background: "#1976d2", color: "white" },
+        }}
+      >
+        <MenuItem
+          onClick={() => setOpenDramas(!openDramas)}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            color: "white",
+          }}
+        >
+          Dramas
+          {openDramas ? <ExpandLess /> : <ExpandMore />}
+        </MenuItem>
+        <Collapse in={openDramas} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem
+              component={Link}
+              to="/admin/dramas/validate"
+              onClick={handleMenuClose}
+              style={{
+                color: "white",
+                paddingLeft: "30px", // Tambahkan padding kiri untuk indentasi
+                fontSize: "0.9rem", // Ukuran font lebih kecil untuk submenu
+              }}
+            >
+              <ListItemText primary="Validate" />
             </ListItem>
-            <Collapse in={openDramas} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {renderMenuItem("Validate", "/admin/dramas/validate")}
-                {renderMenuItem("Input New Drama", "/admin/dramas/input")}
-              </List>
-            </Collapse>
-            {renderMenuItem("Countries", "/admin/countries")}
-            {renderMenuItem("Awards", "/admin/awards")}
-            {renderMenuItem("Genres", "/admin/genres")}
-            {renderMenuItem("Comments", "/admin/comments")}
-            {renderMenuItem("Users", "/admin/users")}
-            {renderMenuItem("Actors", "/admin/actors")}
-          </>
-        )}
-        {renderMenuItem("Logout", "/admin/logout")}
-      </List>
-    </div>
+            <ListItem
+              component={Link}
+              to="/admin/dramas/input"
+              onClick={handleMenuClose}
+              style={{
+                color: "white",
+                paddingLeft: "30px", // Tambahkan padding kiri untuk indentasi
+                fontSize: "0.9rem", // Ukuran font lebih kecil untuk submenu
+              }}
+            >
+              <ListItemText primary="Input New Drama" />
+            </ListItem>
+          </List>
+        </Collapse>
+
+        <MenuItem
+          component={Link}
+          to="/admin/countries"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Countries
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/admin/awards"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Awards
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/admin/genres"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Genres
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/admin/comments"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Comments
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/admin/users"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Users
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/admin/actors"
+          onClick={handleMenuClose}
+          style={{ color: "white" }}
+        >
+          Actors
+        </MenuItem>
+      </Menu>
+    </>
   );
 };
 

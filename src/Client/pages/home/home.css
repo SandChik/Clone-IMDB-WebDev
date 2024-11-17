@@ -77,7 +77,22 @@
     margin: auto;
 }
 
+.filter-container select {
+  width: 200px;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #333;
+  color: white;
+}
 
+.filter-container select option {
+  padding: 5px;
+  font-size: 14px;
+  color: black; /* Teks terlihat di dropdown */
+  background-color: white;
+}
 
 @media (max-width: 768px) {
     .posterImage {

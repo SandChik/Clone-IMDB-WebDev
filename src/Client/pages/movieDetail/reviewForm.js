@@ -12,10 +12,23 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && rating && comment) {
+      const userId = parseInt(localStorage.getItem("userId")); // Ambil userId dari localStorage
+      // Pastikan userId ada (misalnya pengguna sudah login)
+      if (!userId) {
+        toast.error("Please log in to submit a review.");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to submit a review.");
+        return;
+      }
+
       const reviewData = {
         author: name,
-        rating: rating * 2, // Kalikan rating dengan 2 untuk skala 0-10
         content: comment,
+        rating: rating * 2,
         dramaId: dramaId,
       };
 
@@ -24,6 +37,7 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify(reviewData),
         });

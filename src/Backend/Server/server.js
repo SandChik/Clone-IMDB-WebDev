@@ -7,6 +7,11 @@ const prisma = new PrismaClient();
 const awardRoutes = require("./awardRoutes");
 const genreRoutes = require("./genreRoutes");
 const actorRoutes = require("./actorRoutes");
+const userRoutes = require("./userRoutes");
+const authRoutes = require("./authRoutes");
+const dramaRoutes = require("./dramaRoutes");
+const authenticateToken = require("./authenticateToken");
+const reviewRoutes = require("./reviewRoutes");
 
 const {
   addNewDrama,
@@ -14,11 +19,13 @@ const {
   getDramaById,
   getReviewsByDramaId,
   addReview,
-  approveDrama, // Import fungsi approve dari dramaController
-  deleteDrama, // Import fungsi delete dari dramaController
+  approveDrama, 
+  deleteDrama, 
   getAllCountries,
   addCountry,
   deleteCountry,
+  searchDramas,
+  updateDrama,
 } = require("../Controllers/dramaController");
 
 const app = express();
@@ -29,6 +36,34 @@ app.use(bodyParser.json());
 app.use(awardRoutes);
 app.use("/api", genreRoutes);
 app.use("/api/actors", actorRoutes);
+app.use("/api", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/dramas", dramaRoutes);
+app.use("/api", reviewRoutes);
+
+// Route untuk pencarian drama
+app.get("/api/dramas/search", async (req, res) => {
+  try {
+    const { name, genre, year, country, rating } = req.query;
+    console.info(req.query);
+    const dramas = await searchDramas({ name, genre, year, country, rating });
+    res.status(200).json(dramas);
+  } catch (error) {
+    console.error("Error searching dramas:", error);
+    res.status(500).json({ error: "Failed to search dramas" });
+  }
+});
+
+app.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const dramaData = req.body;
+  try {
+    const updatedDrama = await updateDrama(id, dramaData);
+    res.status(200).json(updatedDrama);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update drama" });
+  }
+});
 
 // Route untuk menambahkan drama
 app.post("/api/dramas", async (req, res) => {
@@ -78,15 +113,26 @@ app.get("/api/reviews/:dramaId", async (req, res) => {
 });
 
 // Route untuk menambahkan review baru
-app.post("/api/reviews", async (req, res) => {
+app.post("/api/reviews", authenticateToken, async (req, res) => {
   try {
     const { author, content, rating, dramaId } = req.body;
+    const userId = req.userId; // Ambil userId dari middleware
+
+    // Pastikan semua data yang diperlukan ada
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ message: "User ID is required to create a review" });
+    }
+
     const newReview = await addReview({
       author,
       content,
       rating: parseFloat(rating),
       dramaId: parseInt(dramaId),
+      userId,
     });
+
     res.status(201).json(newReview);
   } catch (error) {
     console.error("Error creating review:", error);

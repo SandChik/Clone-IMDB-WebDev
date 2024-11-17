@@ -2,26 +2,25 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "./SearchResult.css";
 import axios from "axios";
-import Cards from "../../components/card/card"; // Pastikan path ini benar
-import "../../components/card/card.css"; // Impor card.css agar style card diterapkan
+import Cards from "../../components/card/card";
 
 const SearchResults = () => {
   const [results, setResults] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedRating, setSelectedRating] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("q");
 
-  // Fetch genres from TMDb API
+  // Mendapatkan genre dari backend
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/genre/movie/list?api_key=389185ad9f07711c72bfb4c59a7697f8&language=en-US`
-        );
-        setGenres(response.data.genres);
+        const response = await axios.get("http://localhost:5000/api/genres");
+        setGenres(response.data);
       } catch (error) {
         console.error("Error fetching genres:", error);
       }
@@ -29,73 +28,68 @@ const SearchResults = () => {
     fetchGenres();
   }, []);
 
-  // Fetch search results from TMDb API
+  // Mendapatkan country dari backend
   useEffect(() => {
-    const fetchSearchResults = async () => {
-      if (query) {
-        try {
-          const response = await axios.get(
-            `https://api.themoviedb.org/3/search/movie?api_key=389185ad9f07711c72bfb4c59a7697f8&query=${query}&language=en-US&page=1`
-          );
-          setResults(response.data.results);
-        } catch (error) {
-          console.error("Error fetching search results:", error);
-        }
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/countries");
+        setCountries(response.data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
       }
     };
+    fetchCountries();
+  }, []);
+
+  // Mendapatkan hasil pencarian berdasarkan parameter yang dipilih
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      try {
+        // Log parameter yang dikirim untuk debugging
+        console.log("Filter parameters:", {
+          name: query || "",
+          genre: selectedGenre || "",
+          year: selectedYear || "",
+          rating: selectedRating || "",
+          country: selectedCountry || "",
+        });
+
+        const response = await axios.get(
+          "http://localhost:5000/api/dramas/search",
+          {
+            params: {
+              name: query || "",
+              genre: selectedGenre || "",
+              year: selectedYear || "",
+              rating: selectedRating || "",
+              country: selectedCountry || "",
+            },
+          }
+        );
+        setResults(response.data);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    };
+
+    // Panggil fetchSearchResults ketika salah satu dari parameter filter berubah
     fetchSearchResults();
-  }, [query]);
-
-  // Handle genre filter change
-  const handleGenreChange = (e) => {
-    setSelectedGenre(e.target.value);
-  };
-
-  // Handle year filter change
-  const handleYearChange = (e) => {
-    setSelectedYear(e.target.value);
-  };
-
-  // Handle status filter change
-  const handleStatusChange = (e) => {
-    setSelectedStatus(e.target.value);
-  };
-
-  // Filter results based on selected filters
-  const filteredResults = results.filter((movie) => {
-    const matchesGenre = selectedGenre
-      ? movie.genre_ids.includes(parseInt(selectedGenre))
-      : true;
-    const matchesYear = selectedYear
-      ? new Date(movie.release_date).getFullYear() === parseInt(selectedYear)
-      : true;
-    const matchesStatus = selectedStatus
-      ? (selectedStatus === "Released" &&
-          new Date(movie.release_date) <= new Date()) ||
-        (selectedStatus === "Upcoming" &&
-          new Date(movie.release_date) > new Date())
-      : true;
-
-    return matchesGenre && matchesYear && matchesStatus;
-  });
+  }, [query, selectedGenre, selectedYear, selectedRating, selectedCountry]);
 
   return (
     <div className="container">
-      {/* Header with Filters */}
       <header className="filter-header">
         <h1>Search Results for "{query}"</h1>
-
-        {/* Filter Section */}
         <div className="filter-container">
           <label htmlFor="genre-select">Genre: </label>
           <select
             id="genre-select"
             value={selectedGenre}
-            onChange={handleGenreChange}
+            onChange={(e) => setSelectedGenre(e.target.value)}
           >
             <option value="">All</option>
             {genres.map((genre) => (
-              <option key={genre.id} value={genre.id}>
+              <option key={genre.id} value={genre.name}>
                 {genre.name}
               </option>
             ))}
@@ -107,26 +101,40 @@ const SearchResults = () => {
             id="year-input"
             placeholder="Enter Year"
             value={selectedYear}
-            onChange={handleYearChange}
+            onChange={(e) => setSelectedYear(e.target.value)}
           />
 
-          <label htmlFor="status-select">Status: </label>
+          <label htmlFor="rating-input">Rating: </label>
+          <input
+            type="number"
+            id="rating-input"
+            placeholder="Min Rating"
+            value={selectedRating}
+            onChange={(e) => setSelectedRating(e.target.value)}
+            min="0"
+            max="10"
+            step="0.1"
+          />
+
+          <label htmlFor="country-select">Country: </label>
           <select
-            id="status-select"
-            value={selectedStatus}
-            onChange={handleStatusChange}
+            id="country-select"
+            value={selectedCountry}
+            onChange={(e) => setSelectedCountry(e.target.value)}
           >
             <option value="">All</option>
-            <option value="Released">Released</option>
-            <option value="Upcoming">Upcoming</option>
+            {countries.map((country) => (
+              <option key={country.id} value={country.name}>
+                {country.name}
+              </option>
+            ))}
           </select>
         </div>
       </header>
 
-      {/* Search Results */}
       <div className="row flex-nowrap overflow-auto">
-        {filteredResults.length > 0 ? (
-          filteredResults.map((movie) => (
+        {results.length > 0 ? (
+          results.map((movie) => (
             <div className="col-3 mb-4" key={movie.id}>
               <Cards movie={movie} />
             </div>
@@ -140,3 +148,4 @@ const SearchResults = () => {
 };
 
 export default SearchResults;
+  

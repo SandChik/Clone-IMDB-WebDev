@@ -127,6 +127,12 @@
   gap: 20px;
 }
 
+.movie__country {
+  font-size: 1.2rem;
+  margin-right: 20px;
+}
+
+
 @media (max-width: 768px) {
   .movie__poster-trailer {
     flex-direction: column;

@@ -4,7 +4,9 @@ const addNewDrama = async (dramaData) => {
   try {
     // Cari atau buat country berdasarkan nama
     let country = await prisma.country.findUnique({
-      where: { name: dramaData.country },
+      where: {
+        name: dramaData.country, // Pastikan di sini kita mencari berdasarkan nama negara, bukan ID
+      },
     });
 
     if (!country) {
@@ -13,15 +15,15 @@ const addNewDrama = async (dramaData) => {
       });
     }
 
-    // Handle genres
+    // Handle genres: mencari berdasarkan ID, bukan name
     const genreIds = dramaData.genres
       ? await Promise.all(
-          dramaData.genres.map(async (genreName) => {
+          dramaData.genres.map(async (genreId) => {
             let genre = await prisma.genre.findUnique({
-              where: { name: genreName },
+              where: { id: parseInt(genreId) }, // Mencari berdasarkan ID genre
             });
             if (!genre) {
-              genre = await prisma.genre.create({ data: { name: genreName } });
+              throw new Error(`Genre with ID ${genreId} does not exist`);
             }
             return { genreId: genre.id };
           })
@@ -31,13 +33,13 @@ const addNewDrama = async (dramaData) => {
     // Handle actors
     const actorIds = dramaData.actors
       ? await Promise.all(
-          dramaData.actors.map(async (actorName) => {
+          dramaData.actors.map(async (actorId) => {
             let actor = await prisma.actor.findUnique({
-              where: { name: actorName },
+              where: { id: parseInt(actorId) }, // pastikan id adalah integer
             });
             if (!actor) {
               actor = await prisma.actor.create({
-                data: { name: actorName, countryId: country.id },
+                data: { name: actorId, countryId: country.id }, // data actor
               });
             }
             return { actorId: actor.id };
@@ -45,27 +47,43 @@ const addNewDrama = async (dramaData) => {
         )
       : [];
 
-    // Buat drama baru dengan status default 0 (unapprove) jika tidak disediakan
+    // Buat drama baru
     const newDrama = await prisma.drama.create({
       data: {
         title: dramaData.title,
-        alternativeTitle: dramaData.alternative_title || null,
+        alternativeTitle: dramaData.altTitle || null,
         year: parseInt(dramaData.year),
         countryId: country.id,
         synopsis: dramaData.synopsis,
         availability: dramaData.availability,
-        linkTrailer: dramaData.link_trailer || null,
-        award: dramaData.award || null,
+        linkTrailer: dramaData.linkTrailer || null,
         posterUrl: dramaData.posterUrl || null,
         rating: parseFloat(dramaData.rating) || null,
         duration: parseInt(dramaData.duration) || null,
-        status: dramaData.status !== undefined ? dramaData.status : 0, // Set default status to 0
-        genres:
-          genreIds.length > 0 ? { createMany: { data: genreIds } } : undefined,
-        actors:
-          actorIds.length > 0 ? { createMany: { data: actorIds } } : undefined,
+        status: dramaData.status !== undefined ? dramaData.status : 0,
+        genres: {
+          createMany: {
+            data: genreIds,
+          },
+        },
+        actors: {
+          createMany: {
+            data: actorIds,
+          },
+        },
       },
     });
+
+    // Relasi dengan Awards
+    if (dramaData.award) {
+      await prisma.award.create({
+        data: {
+          name: dramaData.award,
+          dramaId: newDrama.id, // Menghubungkan penghargaan dengan drama yang baru dibuat
+        },
+      });
+    }
+
     return newDrama;
   } catch (err) {
     console.error("Error creating drama:", err);
@@ -79,8 +97,8 @@ const getAllDramas = async () => {
       include: {
         genres: { include: { genre: true } },
         actors: { include: { actor: true } },
-        country: true,
-        reviews: true,
+        country: true, // Menyertakan country
+        awards: true, // Menyertakan awards
       },
     });
     return dramas;
@@ -93,12 +111,15 @@ const getAllDramas = async () => {
 const getDramaById = async (id) => {
   try {
     const drama = await prisma.drama.findUnique({
-      where: { id },
+      where: {
+        id: parseInt(id), // Pastikan ID diubah menjadi integer
+      },
       include: {
         genres: { include: { genre: true } },
         actors: { include: { actor: true } },
         reviews: true,
-        awards: true, // Pastikan include awards jika schema sudah benar
+        awards: true,
+        country: true,
       },
     });
     if (!drama) throw new Error("Drama not found");
@@ -125,15 +146,29 @@ const getReviewsByDramaId = async (dramaId) => {
 
 const addReview = async (reviewData) => {
   try {
+    console.log("Review Data:", reviewData); // Tambahkan ini
+    console.log("User ID:", reviewData.userId); // Tambahkan ini
+
+    if (!reviewData.userId) {
+      throw new Error("User ID is required to create a review.");
+    }
+
     const newReview = await prisma.review.create({
-      data: reviewData,
+      data: {
+        author: reviewData.author,
+        content: reviewData.content,
+        rating: reviewData.rating,
+        dramaId: reviewData.dramaId,
+        userId: reviewData.userId,
+      },
     });
     return newReview;
-  } catch (err) {
-    console.error("Error creating review:", err);
-    throw err;
+  } catch (error) {
+    console.error("Error creating review:", error);
+    throw error;
   }
 };
+
 
 const approveDrama = async (req, res) => {
   const { id } = req.params;
@@ -188,6 +223,139 @@ const deleteCountry = async (id) => {
   }
 };
 
+const searchDramas = async (query) => {
+  try {
+    const { name, genre, year, rating, country } = query;
+
+    const filters = {};
+
+    // Filter by name if provided
+    if (name) {
+      filters.title = {
+        contains: name,
+        mode: "insensitive",
+      };
+    }
+
+    // Filter by genre if provided
+    if (genre) {
+      const genreData = await prisma.genre.findUnique({
+        where: { name: genre },
+      });
+
+      if (genreData) {
+        filters.genres = {
+          some: {
+            genreId: genreData.id,
+          },
+        };
+      }
+    }
+
+    // Filter by year if provided
+    if (year) {
+      filters.year = parseInt(year);
+    }
+
+    // Filter by rating if provided
+    if (rating) {
+      filters.rating = {
+        gte: parseFloat(rating),
+      };
+    }
+
+    // Filter by country name if provided
+    if (country) {
+      const countryData = await prisma.country.findUnique({
+        where: { name: country },
+      });
+
+      if (countryData) {
+        filters.countryId = countryData.id;
+      } else {
+        // Jika negara tidak ditemukan, kembalikan array kosong
+        return [];
+      }
+    }
+
+    // Fetch dramas with applied filters
+    const dramas = await prisma.drama.findMany({
+      where: filters,
+      include: {
+        genres: { include: { genre: true } },
+        actors: { include: { actor: true } },
+        country: true,
+        reviews: true,
+        awards: true,
+      },
+    });
+
+    return dramas;
+  } catch (error) {
+    console.error("Error searching dramas:", error);
+    throw error;
+  }
+};
+
+// Fungsi untuk update data drama
+const updateDrama = async (req, res) => {
+  try {
+    const dramaId = parseInt(req.params.id, 10); // pastikan dramaId sebagai integer
+    const dramaData = req.body; // data yang diambil dari request body
+
+    // Hapus asosiasi lama dengan actors, genres
+    await prisma.actorToDrama.deleteMany({ where: { dramaId } });
+    await prisma.dramaToGenres.deleteMany({ where: { dramaId } });
+
+    // Update drama di database dengan data yang diterima
+    const updatedDrama = await prisma.drama.update({
+      where: {
+        id: dramaId
+      },
+      data: {
+        title: dramaData.title,
+        alternativeTitle: dramaData.alternativeTitle,
+        year: dramaData.year,
+        countryId: dramaData.countryId,
+        synopsis: dramaData.synopsis,
+        linkTrailer: dramaData.linkTrailer,
+        posterUrl: dramaData.posterUrl,
+        rating: dramaData.rating,
+        duration: parseInt(dramaData.duration, 10), // pastikan duration sebagai integer
+        
+        // Pengecekan sebelum melakukan mapping
+        genres: {
+          create: dramaData.genres ? dramaData.genres.map((genreId) => ({
+            genre: {
+              connect: { id: genreId }
+            }
+          })) : [] // jika undefined, maka tidak ada yang ditambahkan
+        },
+        
+        actors: {
+          create: dramaData.actors ? dramaData.actors.map((actorId) => ({
+            actor: {
+              connect: { id: actorId }
+            }
+          })) : [] // jika undefined, maka tidak ada yang ditambahkan
+        },
+        
+        awards: {
+          connectOrCreate: dramaData.awards ? dramaData.awards.map((awardName) => ({
+            where: { name: awardName },
+            create: { name: awardName }
+          })) : [] // jika undefined, maka tidak ada yang ditambahkan
+        }
+      }
+    });
+
+    res.json(updatedDrama);
+  } catch (error) {
+    console.error('Error updating drama:', error);
+    res.status(500).json({ error: 'Error updating drama', details: error.message });
+  }
+};
+
 module.exports = {
   addNewDrama,
   getAllDramas,
@@ -198,5 +366,7 @@ module.exports = {
   deleteDrama,
   getAllCountries,
   addCountry,
-  deleteCountry
+  deleteCountry,
+  searchDramas,
+  updateDrama,
 };

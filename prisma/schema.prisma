@@ -17,7 +17,7 @@ model Country {
 
 model Award {
   id                Int              @id @default(autoincrement())
-  name              String
+  name              String           @unique
   dramaId           Int?             // dramaId dibuat opsional
   drama             Drama?           @relation(fields: [dramaId], references: [id], onDelete: Cascade)
   awardToCountries  AwardToCountry[] // Relasi balik untuk AwardToCountry
@@ -89,12 +89,33 @@ model DramaToGenres {
   @@id([dramaId, genreId])
 }
 
+model Users {  // Model Users sebagai ganti dari User
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  role      Role      @default(USER)
+  password  String
+  reviews   Review[]
+}
+
+enum Role {
+  ADMIN
+  WRITER
+  USER
+}
+
 model Review {
-  id        Int             @id @default(autoincrement())
-  author    String
+  id        Int       @id @default(autoincrement())
   content   String
   rating    Float?
-  createdAt DateTime        @default(now())
-  drama     Drama           @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  drama     Drama     @relation(fields: [dramaId], references: [id], onDelete: Cascade)
   dramaId   Int
+  user      Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  author    String    // pastikan kolom author ada jika dibutuhkan
+  status    Boolean   @default(false) // tambahkan kolom status
 }
+
+
+

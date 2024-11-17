@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Box, TextField, Button, Typography, Checkbox } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  MenuItem,
+  Select,
+  Checkbox,
+  ListItemText,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+} from "@mui/material";
 import axios from "axios";
-
-const genresList = [
-  "Action",
-  "Adventures",
-  "Romance",
-  "Drama",
-  "Slice of Life",
-];
 
 const InputNewDrama = () => {
   const [dramaData, setDramaData] = useState({
@@ -23,32 +27,65 @@ const InputNewDrama = () => {
     linkTrailer: "",
     award: "",
     posterUrl: "",
-    photoUrl: "",
     rating: "",
     duration: "",
   });
 
+  const [countries, setCountries] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [actors, setActors] = useState([]);
+
+  useEffect(() => {
+    // Fetch countries, genres, and actors from the server
+    const fetchData = async () => {
+      try {
+        const countryResponse = await axios.get(
+          "http://localhost:5000/api/countries"
+        );
+        const genreResponse = await axios.get(
+          "http://localhost:5000/api/genres"
+        );
+        const actorResponse = await axios.get(
+          "http://localhost:5000/api/actors"
+        );
+
+        setCountries(countryResponse.data);
+        setGenres(genreResponse.data);
+        setActors(actorResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const handleInputChange = (e) => {
-    setDramaData({ ...dramaData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "year" && !/^\d{0,4}$/.test(value)) return; // Only allow up to 4 digits
+    if (name === "rating" && (value < 1 || value > 10)) return; // Only allow 1-10 for rating
+    if (name === "duration" && !/^\d*$/.test(value)) return; // Only allow numbers for duration
+
+    setDramaData({ ...dramaData, [name]: value });
   };
 
-  const handleGenreChange = (genre) => {
-    setDramaData((prevState) => ({
-      ...prevState,
-      genres: prevState.genres.includes(genre)
-        ? prevState.genres.filter((g) => g !== genre)
-        : [...prevState.genres, genre],
-    }));
+  const handleGenreChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setDramaData({
+      ...dramaData,
+      genres: typeof value === "string" ? value.split(",") : value,
+    });
   };
 
-  const handleAddActor = (e) => {
-    if (e.key === "Enter" && e.target.value && dramaData.actors.length < 9) {
-      setDramaData((prevState) => ({
-        ...prevState,
-        actors: [...prevState.actors, e.target.value],
-      }));
-      e.target.value = "";
-    }
+  const handleActorChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setDramaData({
+      ...dramaData,
+      actors: typeof value === "string" ? value.split(",") : value,
+    });
   };
 
   const handleSubmit = async () => {
@@ -60,7 +97,7 @@ const InputNewDrama = () => {
       });
       alert("Drama successfully added!");
     } catch (error) {
-      console.error(error);
+      console.error("Error adding drama:", error);
       alert("Error adding drama.");
     }
   };
@@ -74,96 +111,181 @@ const InputNewDrama = () => {
         Input New Drama
       </Typography>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-        <Box sx={{ flexGrow: 1 }}>
-          {[
-            "title",
-            "altTitle",
-            "year",
-            "country",
-            "synopsis",
-            "availability",
-            "posterUrl",
-            "photoUrl",
-            "rating",
-            "duration",
-            "linkTrailer",
-            "award",
-          ].map((field) => (
-            <Box sx={{ mb: 2 }} key={field}>
-              <TextField
-                label={field
-                  .replace(/([A-Z])/g, " $1")
-                  .replace(/^./, (str) => str.toUpperCase())}
-                variant="outlined"
-                fullWidth
-                name={field}
-                value={dramaData[field]}
-                onChange={handleInputChange}
-                multiline={field === "synopsis"}
-                rows={field === "synopsis" ? 4 : 1}
-                {...textFieldStyles}
-              />
-            </Box>
-          ))}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          label="Title"
+          variant="outlined"
+          fullWidth
+          name="title"
+          value={dramaData.title}
+          onChange={handleInputChange}
+          placeholder="Example: My Drama Title"
+          {...textFieldStyles}
+        />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h6" sx={{ color: "#fff" }}>
-              Add Genres
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              {genresList.map((genre) => (
-                <Box key={genre} sx={{ display: "flex", alignItems: "center" }}>
-                  <Checkbox
-                    checked={dramaData.genres.includes(genre)}
-                    onChange={() => handleGenreChange(genre)}
-                    sx={{ color: "#00BFFF" }}
-                  />
-                  <Typography sx={{ color: "white" }}>{genre}</Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
+        <TextField
+          label="Alternative Title"
+          variant="outlined"
+          fullWidth
+          name="altTitle"
+          value={dramaData.altTitle}
+          onChange={handleInputChange}
+          placeholder="Example: Alternative Title"
+          {...textFieldStyles}
+        />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h6" sx={{ color: "#fff" }}>
-              Add Actors (Up to 9)
-            </Typography>
-            <TextField
-              label="Search Actor Names"
-              variant="outlined"
-              fullWidth
-              onKeyDown={handleAddActor}
-              {...textFieldStyles}
-            />
-            <Box sx={{ display: "flex", gap: 2, mt: 2, flexWrap: "wrap" }}>
-              {dramaData.actors.map((actor, index) => (
-                <Box key={index} sx={styles.actorBox}>
-                  <Typography>{actor}</Typography>
-                  <Button
-                    sx={styles.removeButton}
-                    onClick={() =>
-                      setDramaData((prevState) => ({
-                        ...prevState,
-                        actors: prevState.actors.filter((a) => a !== actor),
-                      }))
-                    }
-                  >
-                    X
-                  </Button>
-                </Box>
-              ))}
-            </Box>
-          </Box>
+        <TextField
+          label="Year"
+          variant="outlined"
+          fullWidth
+          name="year"
+          value={dramaData.year}
+          onChange={handleInputChange}
+          placeholder="Example: 2022"
+          {...textFieldStyles}
+        />
 
-          <Button
-            variant="contained"
-            sx={styles.submitButton}
-            onClick={handleSubmit}
+        {/* Dropdown for Country */}
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <InputLabel sx={{ color: "#fff" }}>Country</InputLabel>
+          <Select
+            name="country"
+            value={dramaData.country}
+            onChange={handleInputChange}
+            input={<OutlinedInput label="Country" />}
+            sx={{ color: "white", backgroundColor: "#2c2c2c" }}
           >
-            Submit
-          </Button>
-        </Box>
+            {countries.map((country) => (
+              <MenuItem key={country.id} value={country.name}>
+                {country.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Synopsis"
+          variant="outlined"
+          fullWidth
+          name="synopsis"
+          multiline
+          rows={4}
+          value={dramaData.synopsis}
+          onChange={handleInputChange}
+          placeholder="Brief summary of the drama"
+          {...textFieldStyles}
+        />
+
+        {/* Dropdown for Genres */}
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <InputLabel sx={{ color: "#fff" }}>Genres</InputLabel>
+          <Select
+            multiple
+            value={dramaData.genres}
+            onChange={handleGenreChange}
+            input={<OutlinedInput label="Genres" />}
+            renderValue={(selected) =>
+              selected
+                .map((id) => genres.find((g) => g.id === id)?.name)
+                .join(", ")
+            }
+            sx={{ color: "white", backgroundColor: "#2c2c2c" }}
+          >
+            {genres.map((genre) => (
+              <MenuItem key={genre.id} value={genre.id}>
+                <Checkbox checked={dramaData.genres.includes(genre.id)} />
+                <ListItemText primary={genre.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Dropdown for Actors */}
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <InputLabel sx={{ color: "#fff" }}>Actors</InputLabel>
+          <Select
+            multiple
+            value={dramaData.actors}
+            onChange={handleActorChange}
+            input={<OutlinedInput label="Actors" />}
+            renderValue={(selected) =>
+              selected
+                .map((id) => actors.find((a) => a.id === id)?.name)
+                .join(", ")
+            }
+            sx={{ color: "white", backgroundColor: "#2c2c2c" }}
+          >
+            {actors.map((actor) => (
+              <MenuItem key={actor.id} value={actor.id}>
+                <Checkbox checked={dramaData.actors.includes(actor.id)} />
+                <ListItemText primary={actor.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Trailer Link"
+          variant="outlined"
+          fullWidth
+          name="linkTrailer"
+          value={dramaData.linkTrailer}
+          onChange={handleInputChange}
+          placeholder="Example: https://trailerlink.com"
+          {...textFieldStyles}
+        />
+
+        <TextField
+          label="Award"
+          variant="outlined"
+          fullWidth
+          name="award"
+          value={dramaData.award}
+          onChange={handleInputChange}
+          placeholder="Example: Best Drama"
+          {...textFieldStyles}
+        />
+
+        <TextField
+          label="Poster URL"
+          variant="outlined"
+          fullWidth
+          name="posterUrl"
+          value={dramaData.posterUrl}
+          onChange={handleInputChange}
+          placeholder="Example: https://posterurl.com/poster.jpg"
+          {...textFieldStyles}
+        />
+
+        <TextField
+          label="Rating (1-10)"
+          variant="outlined"
+          fullWidth
+          name="rating"
+          value={dramaData.rating}
+          onChange={handleInputChange}
+          placeholder="Example: 8.5"
+          {...textFieldStyles}
+        />
+
+        <TextField
+          label="Duration (minutes)"
+          variant="outlined"
+          fullWidth
+          name="duration"
+          value={dramaData.duration}
+          onChange={handleInputChange}
+          placeholder="Example: 120"
+          {...textFieldStyles}
+        />
+
+        <Button
+          variant="contained"
+          sx={styles.submitButton}
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
       </Box>
     </Box>
   );
@@ -172,18 +294,6 @@ const InputNewDrama = () => {
 export default InputNewDrama;
 
 const styles = {
-  actorBox: {
-    width: 55,
-    height: 71,
-    bgcolor: "#444",
-    borderRadius: "5px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "white",
-    position: "relative",
-  },
-  removeButton: { position: "absolute", top: -5, right: -5, color: "#FF69B4" },
   submitButton: {
     bgcolor: "#1E90FF",
     fontWeight: "bold",

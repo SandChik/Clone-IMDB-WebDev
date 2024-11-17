@@ -46,7 +46,7 @@ const PreviewValidate = ({ open, handleClose, drama, onApprove }) => {
           Drama Preview
         </Typography>
 
-        {/* Poster di atas Trailer */}
+        {/* Poster dan Trailer */}
         <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box display="flex" justifyContent="center" mb={2}>
             <img
@@ -61,7 +61,6 @@ const PreviewValidate = ({ open, handleClose, drama, onApprove }) => {
             />
           </Box>
 
-          {/* Trailer di bawah Poster */}
           <Typography
             variant="h6"
             fontWeight="bold"
@@ -91,7 +90,7 @@ const PreviewValidate = ({ open, handleClose, drama, onApprove }) => {
           </Box>
         </Box>
 
-        {/* Aktor dan detail drama lainnya */}
+        {/* Aktor */}
         <Box mb={3} mt={2}>
           <Typography
             variant="h6"
@@ -149,7 +148,7 @@ const PreviewValidate = ({ open, handleClose, drama, onApprove }) => {
           </Box>
         </Box>
 
-        {/* Deskripsi Drama */}
+        {/* Detail Drama */}
         <Typography
           variant="h6"
           fontWeight="bold"
@@ -172,7 +171,14 @@ const PreviewValidate = ({ open, handleClose, drama, onApprove }) => {
         </Typography>
         <Typography variant="body2" sx={{ color: "#ffffff" }} gutterBottom>
           <strong>Genres:</strong>{" "}
-          {drama.genres.map((g) => g.genre.name).join(", ")}
+          {drama.genres.map((g) => g.genre.name).join(", ") || "N/A"}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#ffffff" }} gutterBottom>
+          <strong>Country:</strong> {drama.country?.name || "N/A"}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#ffffff" }} gutterBottom>
+          <strong>Awards:</strong>{" "}
+          {drama.awards.map((award) => award.name).join(", ") || "N/A"}
         </Typography>
 
         {/* Tombol Approve/Unapprove dan Close */}

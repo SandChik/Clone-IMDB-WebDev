@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
+import "./Header.css";
 
-const Header = () => {
+const Header = ({ isAuthenticated, userRole, handleLogout }) => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
@@ -10,7 +10,7 @@ const Header = () => {
     e.preventDefault();
     if (query) {
       navigate(`/search?q=${query}`);
-      setQuery(""); // Bersihkan input setelah pencarian
+      setQuery("");
     }
   };
 
@@ -35,6 +35,16 @@ const Header = () => {
           />
           <button type="submit">Search</button>
         </form>
+
+        {isAuthenticated ? (
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        ) : (
+          <Link to="/login" className="rounded-login-button">
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,8 @@
+
+/* CSS untuk kontainer utama */
+.main-content {
+  margin-top: -100px; /* Tambahkan margin sesuai tinggi header */
+  padding: 20px;
+  flex: 1;
+  overflow: auto;
+}

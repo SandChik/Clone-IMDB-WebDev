@@ -1,0 +1,107 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000000;
+}
+
+.login-box {
+  background-color: #1e1e1e;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 300px;
+}
+
+.login-title {
+  color: #f1c40f;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+  width: 93%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: #333;
+  color: #fff;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #f1c40f;
+  color: #333;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #d4ac0d;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"],
+.login-box input[type="text"] { /* Tambahkan input[type="text"] di sini */
+  width: 93%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: #333;
+  color: #fff;
+}
+
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #4caf50;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.register-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.register-link-text {
+  color: #f1c40f;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.register-link-text:hover {
+  color: #d4ac0d;
+  text-decoration: underline;
+}
+
+.toggle-passwords {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+.toggle-passwords:hover {
+  color: #555; /* Warna lebih gelap saat hover */
+}
