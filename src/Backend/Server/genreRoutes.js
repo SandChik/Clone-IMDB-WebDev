@@ -6,10 +6,11 @@ const {
   updateGenre,
   deleteGenre,
 } = require("../Controllers/genreController");
+const validateApiAccess = require("../Middleware/validateApiAccess");
 
 router.get("/genres", getAllGenres);
-router.post("/genres", createGenre);
-router.put("/genres/:id", updateGenre);
-router.delete("/genres/:id", deleteGenre);
+router.post("/genres", validateApiAccess(["ADMIN"]), createGenre);
+router.put("/genres/:id", validateApiAccess(["ADMIN"]), updateGenre);
+router.delete("/genres/:id", validateApiAccess(["ADMIN"]), deleteGenre);
 
 module.exports = router;

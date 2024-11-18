@@ -29,8 +29,8 @@ const Genres = () => {
 
   const fetchGenres = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/genres");
-      const sortedGenres = response.data.sort((a, b) => a.id - b.id); // Sort genres by id in ascending order
+      const response = await axios.get("/api/genres");
+      const sortedGenres = response.data.sort((a, b) => a.id - b.id); // Urutkan berdasarkan ID
       setGenres(sortedGenres);
     } catch (error) {
       console.error("Error fetching genres:", error);
@@ -45,9 +45,7 @@ const Genres = () => {
 
     try {
       if (editId) {
-        await axios.put(`http://localhost:5000/api/genres/${editId}`, {
-          name: genreName,
-        });
+        await axios.put(`/api/genres/${editId}`, { name: genreName });
 
         setGenres((prevGenres) =>
           prevGenres
@@ -58,9 +56,7 @@ const Genres = () => {
         );
         setEditId(null);
       } else {
-        const response = await axios.post("http://localhost:5000/api/genres", {
-          name: genreName,
-        });
+        const response = await axios.post("/api/genres", { name: genreName });
 
         setGenres((prevGenres) =>
           [...prevGenres, response.data].sort((a, b) => a.id - b.id)
@@ -83,7 +79,7 @@ const Genres = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this genre?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/genres/${id}`);
+        await axios.delete(`/api/genres/${id}`);
         setGenres((prevGenres) =>
           prevGenres.filter((genre) => genre.id !== id)
         );

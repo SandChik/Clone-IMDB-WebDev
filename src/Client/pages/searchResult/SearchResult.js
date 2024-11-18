@@ -64,6 +64,9 @@ const SearchResults = () => {
               rating: selectedRating || "",
               country: selectedCountry || "",
             },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Tambahkan header Authorization
+            },
           }
         );
         setResults(response.data);
@@ -128,7 +131,7 @@ const SearchResults = () => {
                 {country.name}
               </option>
             ))}
-          </select>
+          </select> 
         </div>
       </header>
 

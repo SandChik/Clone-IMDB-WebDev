@@ -7,10 +7,11 @@ const {
   unapproveReviews,
   deleteReviews,
 } = require("../Controllers/reviewController");
+const validateApiAccess = require("../Middleware/validateApiAccess");
 
 router.get("/reviews", getAllReviews);
-router.put("/reviews/approve", approveReviews);
-router.put("/reviews/unapprove", unapproveReviews);
-router.delete("/reviews", deleteReviews);
+router.put("/reviews/approve", validateApiAccess(["ADMIN"]), approveReviews);
+router.put("/reviews/unapprove",validateApiAccess(["ADMIN"]), unapproveReviews);
+router.delete("/reviews", validateApiAccess(["ADMIN"]), deleteReviews);
 
 module.exports = router;

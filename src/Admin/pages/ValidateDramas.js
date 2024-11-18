@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import PreviewValidate from "./PreviewValidate";
 import EditDramaModal from "./EditDramaModal";
+import axios from "../utils/axiosConfig";
 
 const ValidateDramas = () => {
   const [statusFilter, setStatusFilter] = useState("All");
@@ -29,9 +30,8 @@ const ValidateDramas = () => {
 
   const fetchDramas = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/dramas");
-      const data = await response.json();
-      setDramaData(data.sort((a, b) => a.id - b.id));
+      const response = await axios.get("/api/dramas"); // Menggunakan axiosConfig
+      setDramaData(response.data.sort((a, b) => a.id - b.id));
     } catch (error) {
       console.error("Error fetching dramas:", error);
     }
@@ -73,17 +73,10 @@ const ValidateDramas = () => {
   const handleToggleApproval = async (id, currentStatus) => {
     const newStatus = currentStatus === 1 ? 0 : 1;
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/dramas/${id}/approve`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-      if (response.ok) {
+      const response = await axios.patch(`/api/dramas/${id}/approve`, {
+        status: newStatus,
+      }); // Menggunakan axios
+      if (response.status === 200) {
         fetchDramas(); // Refresh data after update
         setOpenModal(false); // Close modal after approval/unapproval
       } else {
@@ -95,8 +88,12 @@ const ValidateDramas = () => {
   };
 
   const handleDeleteDrama = async (id) => {
-    await fetch(`http://localhost:5000/api/dramas/${id}`, { method: "DELETE" });
-    fetchDramas();
+    try {
+      await axios.delete(`/api/dramas/${id}`); // Menggunakan axios
+      fetchDramas(); // Refresh data after deletion
+    } catch (error) {
+      console.error("Error deleting drama:", error);
+    }
   };
 
   return (

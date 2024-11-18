@@ -11,6 +11,7 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
+import axios from "../utils/axiosConfig";
 
 const modalStyle = {
   position: "absolute",
@@ -34,9 +35,8 @@ const Countries = () => {
 
   const fetchCountries = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/countries");
-      const data = await response.json();
-      setCountries(data);
+      const response = await axios.get("/api/countries");
+      setCountries(response.data);
     } catch (error) {
       console.error("Error fetching countries:", error);
     }
@@ -50,16 +50,12 @@ const Countries = () => {
     if (newCountry.trim() === "") return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/countries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCountry.toUpperCase() }),
+      await axios.post("/api/countries", {
+        name: newCountry.toUpperCase(),
       });
-      if (response.ok) {
-        setNewCountry("");
-        fetchCountries();
-        handleCloseAddModal();
-      }
+      setNewCountry("");
+      fetchCountries();
+      handleCloseAddModal();
     } catch (error) {
       console.error("Error adding country:", error);
     }
@@ -67,9 +63,7 @@ const Countries = () => {
 
   const handleDeleteCountry = async () => {
     try {
-      await fetch(`http://localhost:5000/api/countries/${selectedCountryId}`, {
-        method: "DELETE",
-      });
+      await axios.delete(`/api/countries/${selectedCountryId}`);
       fetchCountries();
       handleCloseDeleteModal();
     } catch (error) {

@@ -42,6 +42,10 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
       localStorage.setItem("userId", userId);
+
+      // Konfigurasikan token di header default Axios
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      
       setIsAuthenticated(true);
       setUserRole(role);
 

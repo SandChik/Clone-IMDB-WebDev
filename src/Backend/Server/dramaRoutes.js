@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { addNewDrama, updateDrama } = require("../Controllers/dramaController");
 const prisma = require("../prismaClient");
+const validateApiAccess = require("../Middleware/validateApiAccess");
 
 // Endpoint untuk menambahkan drama baru
-router.post("/", async (req, res) => {
+router.post("/", validateApiAccess(["ADMIN"]), async (req, res) => {
   try {
     const dramaData = req.body;
     const newDrama = await addNewDrama(dramaData);
@@ -15,6 +16,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", updateDrama);
+router.put("/:id", validateApiAccess(["ADMIN"]), updateDrama);
 
 module.exports = router;

@@ -12,6 +12,7 @@ const authRoutes = require("./authRoutes");
 const dramaRoutes = require("./dramaRoutes");
 const authenticateToken = require("./authenticateToken");
 const reviewRoutes = require("./reviewRoutes");
+const validateApiAccess = require("../Middleware/validateApiAccess");
 
 const {
   addNewDrama,
@@ -66,7 +67,7 @@ app.put("/:id", async (req, res) => {
 });
 
 // Route untuk menambahkan drama
-app.post("/api/dramas", async (req, res) => {
+app.post("/api/dramas",validateApiAccess(["ADMIN"]), async (req, res) => {
   try {
     const newDrama = await addNewDrama(req.body);
     res.status(201).json(newDrama);
@@ -113,7 +114,7 @@ app.get("/api/reviews/:dramaId", async (req, res) => {
 });
 
 // Route untuk menambahkan review baru
-app.post("/api/reviews", authenticateToken, async (req, res) => {
+app.post("/api/reviews", validateApiAccess(["USER"]), async (req, res) => {
   try {
     const { author, content, rating, dramaId } = req.body;
     const userId = req.userId; // Ambil userId dari middleware
@@ -141,10 +142,10 @@ app.post("/api/reviews", authenticateToken, async (req, res) => {
 });
 
 // Route untuk approve drama
-app.patch("/api/dramas/:id/approve", approveDrama);
+app.patch("/api/dramas/:id/approve",validateApiAccess(["ADMIN"]), approveDrama);
 
 // Route untuk delete drama
-app.delete("/api/dramas/:id", async (req, res) => {
+app.delete("/api/dramas/:id",validateApiAccess(["ADMIN"]), async (req, res) => {
   try {
     await deleteDrama(req.params.id);
     res.json({ message: "Drama deleted successfully" });

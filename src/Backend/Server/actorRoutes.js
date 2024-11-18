@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const validateApiAccess = require("../Middleware/validateApiAccess");
 const {
   getAllActors,
   createActor,
@@ -7,9 +8,9 @@ const {
   deleteActor,
 } = require("../Controllers/actorController");
 
-router.get("/", getAllActors);
-router.post("/", createActor);
-router.put("/:id", updateActor);
-router.delete("/:id", deleteActor);
+router.get("/",validateApiAccess(["ADMIN", "USER"]), getAllActors);
+router.post("/", validateApiAccess(["ADMIN"]), createActor);
+router.put("/:id", validateApiAccess(["ADMIN"]), updateActor);
+router.delete("/:id", validateApiAccess(["ADMIN"]), deleteActor);
 
 module.exports = router;

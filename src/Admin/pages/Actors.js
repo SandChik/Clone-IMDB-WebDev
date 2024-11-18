@@ -15,7 +15,7 @@ import {
   DialogActions,
   MenuItem,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosConfig"; // Gunakan axiosConfig
 
 const Actors = () => {
   const [actors, setActors] = useState([]);
@@ -36,7 +36,7 @@ const Actors = () => {
 
   const fetchActors = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/actors");
+      const response = await axios.get("/api/actors"); // Gunakan axiosConfig
       const sortedActors = response.data.sort((a, b) => a.id - b.id); // Urutkan ascending berdasarkan id
       setActors(sortedActors);
     } catch (error) {
@@ -46,7 +46,7 @@ const Actors = () => {
 
   const fetchCountries = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/countries");
+      const response = await axios.get("/api/countries"); // Gunakan axiosConfig
       setCountries(response.data);
     } catch (error) {
       console.error("Error fetching countries:", error);
@@ -61,17 +61,14 @@ const Actors = () => {
 
     try {
       if (editId) {
-        await axios.put(`http://localhost:5000/api/actors/${editId}`, formData);
+        await axios.put(`/api/actors/${editId}`, formData); // Gunakan axiosConfig
         setActors((prevActors) =>
           prevActors.map((actor) =>
             actor.id === editId ? { ...actor, ...formData } : actor
           )
         );
       } else {
-        const response = await axios.post(
-          "http://localhost:5000/api/actors",
-          formData
-        );
+        const response = await axios.post("/api/actors", formData); // Gunakan axiosConfig
         setActors((prevActors) =>
           [...prevActors, response.data].sort((a, b) => a.id - b.id)
         ); // Urutkan setelah menambahkan
@@ -97,7 +94,7 @@ const Actors = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this actor?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/actors/${id}`);
+        await axios.delete(`/api/actors/${id}`); // Gunakan axiosConfig
         setActors((prevActors) =>
           prevActors.filter((actor) => actor.id !== id)
         );
@@ -106,6 +103,7 @@ const Actors = () => {
       }
     }
   };
+
 
   const handleDialogClose = () => {
     setOpenDialog(false);

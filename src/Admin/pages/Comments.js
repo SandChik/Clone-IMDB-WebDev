@@ -13,7 +13,7 @@ import {
   Select,
   CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 
 const Comments = () => {
   const [filter, setFilter] = useState("None");
@@ -24,7 +24,7 @@ const Comments = () => {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/reviews");
+      const response = await axios.get("/api/reviews");
       const fetchedComments = response.data.map((review) => ({
         id: review.id,
         username: review.user.username,
@@ -57,7 +57,7 @@ const Comments = () => {
 
   const handleApprove = async () => {
     try {
-      await axios.put("http://localhost:5000/api/reviews/approve", {
+      await axios.put("/api/reviews/approve", {
         ids: selectedComments,
       });
       fetchComments();
@@ -69,7 +69,7 @@ const Comments = () => {
 
   const handleUnapprove = async () => {
     try {
-      await axios.put("http://localhost:5000/api/reviews/unapprove", {
+      await axios.put("/api/reviews/unapprove", {
         ids: selectedComments,
       });
       fetchComments();
@@ -82,7 +82,7 @@ const Comments = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete selected comments?")) {
       try {
-        await axios.delete("http://localhost:5000/api/reviews", {
+        await axios.delete("/api/reviews", {
           data: { ids: selectedComments },
         });
         fetchComments();
@@ -92,6 +92,7 @@ const Comments = () => {
       }
     }
   };
+
 
   return (
     <Box sx={{ p: 3, bgcolor: "#121212", minHeight: "100vh" }}>

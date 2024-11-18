@@ -11,7 +11,8 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
+
 
 const modalStyle = {
   position: "absolute",
@@ -45,7 +46,7 @@ const Awards = () => {
 
   const fetchAwards = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/awards");
+      const response = await axios.get("/api/awards"); // Gunakan axiosConfig
       const sortedAwards = response.data.sort((a, b) => a.id - b.id); // Sorting ascending by ID
       setAwards(sortedAwards);
     } catch (error) {
@@ -55,7 +56,7 @@ const Awards = () => {
 
   const fetchCountries = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/countries");
+      const response = await axios.get("/api/countries"); // Gunakan axiosConfig
       setCountries(response.data);
     } catch (error) {
       console.error("Error fetching countries:", error);
@@ -82,17 +83,17 @@ const Awards = () => {
     try {
       if (editId) {
         // Update existing award
-        await axios.put(`http://localhost:5000/api/awards/${editId}`, {
+        await axios.put(`/api/awards/${editId}`, {
           countryId,
           name: award,
-        });
+        }); // Gunakan axiosConfig
         setEditId(null);
       } else {
         // Add new award
-        await axios.post("http://localhost:5000/api/awards", {
+        await axios.post("/api/awards", {
           countryId,
           name: award,
-        });
+        }); // Gunakan axiosConfig
       }
       fetchAwards(); // Refresh data
       handleCloseModal(); // Close modal
@@ -113,7 +114,7 @@ const Awards = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this award?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/awards/${id}`);
+        await axios.delete(`/api/awards/${id}`); // Gunakan axiosConfig
         fetchAwards();
       } catch (error) {
         console.error("Error deleting award:", error);

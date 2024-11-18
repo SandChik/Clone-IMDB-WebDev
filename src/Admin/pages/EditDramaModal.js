@@ -72,16 +72,12 @@ const EditDramaModal = ({ open, handleClose, drama, refreshData }) => {
 
     const fetchData = async () => {
       try {
-        const countryResponse = await axios.get(
-          "http://localhost:5000/api/countries"
-        );
-        const genreResponse = await axios.get(
-          "http://localhost:5000/api/genres"
-        );
-        const actorResponse = await axios.get(
-          "http://localhost:5000/api/actors"
-        );
-
+        const [countryResponse, genreResponse, actorResponse] =
+          await Promise.all([
+            axios.get("/api/countries"),
+            axios.get("/api/genres"),
+            axios.get("/api/actors"),
+          ]);
         setCountries(countryResponse.data);
         setGenres(genreResponse.data);
         setActors(actorResponse.data);
@@ -89,6 +85,7 @@ const EditDramaModal = ({ open, handleClose, drama, refreshData }) => {
         console.error("Error fetching data:", error);
       }
     };
+
     fetchData();
   }, [drama]);
 
@@ -119,9 +116,7 @@ const EditDramaModal = ({ open, handleClose, drama, refreshData }) => {
 
   const handleSaveChanges = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/dramas/${drama.id}`, {
-        ...dramaData,
-      });
+      await axios.put(`/api/dramas/${drama.id}`, { ...dramaData });
       alert("Drama updated successfully!");
       handleClose();
       refreshData();
@@ -130,6 +125,7 @@ const EditDramaModal = ({ open, handleClose, drama, refreshData }) => {
       alert("Error updating drama.");
     }
   };
+
 
   return (
     <Modal open={open} onClose={handleClose}>

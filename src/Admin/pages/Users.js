@@ -17,7 +17,7 @@ import {
   TextField,
   CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../utils/axiosConfig"; // Gunakan axiosConfig
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -29,7 +29,7 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users");
+      const response = await axios.get("/api/users"); // Tidak perlu menambahkan token manual
       const sortedUsers = response.data.sort((a, b) => a.id - b.id);
       setUsers(sortedUsers);
       setLoading(false);
@@ -39,7 +39,6 @@ const Users = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchUsers();
@@ -59,7 +58,7 @@ const Users = () => {
     if (!editUser) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/users/${editUser.id}`, {
+      await axios.put(`/api/users/${editUser.id}`, {
         username: editUser.username,
         email: editUser.email,
         role: editUser.role,
@@ -74,7 +73,7 @@ const Users = () => {
   const handleDeleteUser = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/users/${id}`);
+        await axios.delete(`/api/users/${id}`);
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);

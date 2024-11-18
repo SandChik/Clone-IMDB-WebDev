@@ -6,10 +6,11 @@ const {
   deleteUser,
   createUser,
 } = require("../Controllers/userController");
+const validateApiAccess = require("../Middleware/validateApiAccess");
 
 router.get("/users", getUsers);
-router.put("/users/:id", updateUser);
-router.delete("/users/:id", deleteUser);
-router.post("/users", createUser);
+router.put("/users/:id",validateApiAccess(["ADMIN"]), updateUser);
+router.delete("/users/:id",validateApiAccess(["ADMIN"]), deleteUser);
+router.post("/users",validateApiAccess(["ADMIN"]), createUser);
 
 module.exports = router;

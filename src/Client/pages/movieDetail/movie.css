@@ -2,6 +2,7 @@
   position: relative;
   color: white;
   overflow: hidden;
+  margin-top: 80px;
 }
 
 .movie__content {
