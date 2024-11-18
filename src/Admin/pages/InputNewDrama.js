@@ -21,11 +21,9 @@ const InputNewDrama = () => {
     year: "",
     country: "",
     synopsis: "",
-    availability: "",
     genres: [],
     actors: [],
     linkTrailer: "",
-    award: "",
     posterUrl: "",
     rating: "",
     duration: "",
@@ -34,6 +32,7 @@ const InputNewDrama = () => {
   const [countries, setCountries] = useState([]);
   const [genres, setGenres] = useState([]);
   const [actors, setActors] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Fetch countries, genres, and actors from the server
@@ -61,10 +60,6 @@ const InputNewDrama = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "year" && !/^\d{0,4}$/.test(value)) return; // Only allow up to 4 digits
-    if (name === "rating" && (value < 1 || value > 10)) return; // Only allow 1-10 for rating
-    if (name === "duration" && !/^\d*$/.test(value)) return; // Only allow numbers for duration
-
     setDramaData({ ...dramaData, [name]: value });
   };
 
@@ -88,7 +83,49 @@ const InputNewDrama = () => {
     });
   };
 
+  const validateFields = () => {
+    const validationErrors = {};
+    if (!dramaData.title.trim()) validationErrors.title = "Title is required.";
+    if (!dramaData.year || isNaN(dramaData.year)) {
+      validationErrors.year = "Year is required and must be a number.";
+    } else if (parseInt(dramaData.year) > new Date().getFullYear()) {
+      validationErrors.year = `Year cannot exceed ${new Date().getFullYear()}.`;
+    }
+    if (!dramaData.country) validationErrors.country = "Country is required.";
+    if (!dramaData.synopsis.trim())
+      validationErrors.synopsis = "Synopsis is required.";
+    if (dramaData.genres.length === 0)
+      validationErrors.genres = "At least one genre is required.";
+    if (dramaData.actors.length === 0)
+      validationErrors.actors = "At least one actor is required.";
+    if (dramaData.genres.length > 10) {
+      validationErrors.genres = "You can select up to 10 genres only.";
+    }
+    if (dramaData.actors.length > 10) {
+      validationErrors.actors = "You can select up to 10 actors only.";
+    }
+    if (!dramaData.linkTrailer.trim())
+      validationErrors.linkTrailer = "Trailer link is required.";
+    if (!dramaData.posterUrl.trim())
+      validationErrors.posterUrl = "Poster URL is required.";
+    if (!dramaData.rating || isNaN(dramaData.rating))
+      validationErrors.rating =
+        "Rating is required and must be a number between 1 and 10.";
+    else if (dramaData.rating < 1 || dramaData.rating > 10)
+      validationErrors.rating = "Rating must be between 1 and 10.";
+    if (!dramaData.duration || isNaN(dramaData.duration))
+      validationErrors.duration = "Duration is required and must be a number.";
+
+    setErrors(validationErrors);
+
+    return Object.keys(validationErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateFields()) {
+      return; // Jangan submit jika ada error validasi
+    }
+
     try {
       await axios.post("http://localhost:5000/api/dramas", {
         ...dramaData,
@@ -112,6 +149,7 @@ const InputNewDrama = () => {
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* Title */}
         <TextField
           label="Title"
           variant="outlined"
@@ -120,9 +158,12 @@ const InputNewDrama = () => {
           value={dramaData.title}
           onChange={handleInputChange}
           placeholder="Example: My Drama Title"
+          error={!!errors.title}
+          helperText={errors.title}
           {...textFieldStyles}
         />
 
+        {/* Alternative Title */}
         <TextField
           label="Alternative Title"
           variant="outlined"
@@ -134,6 +175,7 @@ const InputNewDrama = () => {
           {...textFieldStyles}
         />
 
+        {/* Year */}
         <TextField
           label="Year"
           variant="outlined"
@@ -142,10 +184,12 @@ const InputNewDrama = () => {
           value={dramaData.year}
           onChange={handleInputChange}
           placeholder="Example: 2022"
+          error={!!errors.year}
+          helperText={errors.year}
           {...textFieldStyles}
         />
 
-        {/* Dropdown for Country */}
+        {/* Country */}
         <FormControl fullWidth sx={{ mt: 2 }}>
           <InputLabel sx={{ color: "#fff" }}>Country</InputLabel>
           <Select
@@ -153,6 +197,7 @@ const InputNewDrama = () => {
             value={dramaData.country}
             onChange={handleInputChange}
             input={<OutlinedInput label="Country" />}
+            error={!!errors.country}
             sx={{ color: "white", backgroundColor: "#2c2c2c" }}
           >
             {countries.map((country) => (
@@ -161,8 +206,14 @@ const InputNewDrama = () => {
               </MenuItem>
             ))}
           </Select>
+          {errors.country && (
+            <Typography variant="caption" color="error">
+              {errors.country}
+            </Typography>
+          )}
         </FormControl>
 
+        {/* Synopsis */}
         <TextField
           label="Synopsis"
           variant="outlined"
@@ -173,10 +224,12 @@ const InputNewDrama = () => {
           value={dramaData.synopsis}
           onChange={handleInputChange}
           placeholder="Brief summary of the drama"
+          error={!!errors.synopsis}
+          helperText={errors.synopsis}
           {...textFieldStyles}
         />
 
-        {/* Dropdown for Genres */}
+        {/* Genres */}
         <FormControl fullWidth sx={{ mt: 2 }}>
           <InputLabel sx={{ color: "#fff" }}>Genres</InputLabel>
           <Select
@@ -189,6 +242,7 @@ const InputNewDrama = () => {
                 .map((id) => genres.find((g) => g.id === id)?.name)
                 .join(", ")
             }
+            error={!!errors.genres}
             sx={{ color: "white", backgroundColor: "#2c2c2c" }}
           >
             {genres.map((genre) => (
@@ -198,9 +252,14 @@ const InputNewDrama = () => {
               </MenuItem>
             ))}
           </Select>
+          {errors.genres && (
+            <Typography variant="caption" color="error">
+              {errors.genres}
+            </Typography>
+          )}
         </FormControl>
 
-        {/* Dropdown for Actors */}
+        {/* Actors */}
         <FormControl fullWidth sx={{ mt: 2 }}>
           <InputLabel sx={{ color: "#fff" }}>Actors</InputLabel>
           <Select
@@ -213,6 +272,7 @@ const InputNewDrama = () => {
                 .map((id) => actors.find((a) => a.id === id)?.name)
                 .join(", ")
             }
+            error={!!errors.actors}
             sx={{ color: "white", backgroundColor: "#2c2c2c" }}
           >
             {actors.map((actor) => (
@@ -222,8 +282,14 @@ const InputNewDrama = () => {
               </MenuItem>
             ))}
           </Select>
+          {errors.actors && (
+            <Typography variant="caption" color="error">
+              {errors.actors}
+            </Typography>
+          )}
         </FormControl>
 
+        {/* Trailer Link */}
         <TextField
           label="Trailer Link"
           variant="outlined"
@@ -232,6 +298,8 @@ const InputNewDrama = () => {
           value={dramaData.linkTrailer}
           onChange={handleInputChange}
           placeholder="Example: https://trailerlink.com"
+          error={!!errors.linkTrailer}
+          helperText={errors.linkTrailer}
           {...textFieldStyles}
         />
 
@@ -246,6 +314,7 @@ const InputNewDrama = () => {
           {...textFieldStyles}
         />
 
+        {/* Poster URL */}
         <TextField
           label="Poster URL"
           variant="outlined"
@@ -254,9 +323,12 @@ const InputNewDrama = () => {
           value={dramaData.posterUrl}
           onChange={handleInputChange}
           placeholder="Example: https://posterurl.com/poster.jpg"
+          error={!!errors.posterUrl}
+          helperText={errors.posterUrl}
           {...textFieldStyles}
         />
 
+        {/* Rating */}
         <TextField
           label="Rating (1-10)"
           variant="outlined"
@@ -265,9 +337,12 @@ const InputNewDrama = () => {
           value={dramaData.rating}
           onChange={handleInputChange}
           placeholder="Example: 8.5"
+          error={!!errors.rating}
+          helperText={errors.rating}
           {...textFieldStyles}
         />
 
+        {/* Duration */}
         <TextField
           label="Duration (minutes)"
           variant="outlined"
@@ -276,9 +351,12 @@ const InputNewDrama = () => {
           value={dramaData.duration}
           onChange={handleInputChange}
           placeholder="Example: 120"
+          error={!!errors.duration}
+          helperText={errors.duration}
           {...textFieldStyles}
         />
 
+        {/* Submit Button */}
         <Button
           variant="contained"
           sx={styles.submitButton}

@@ -11,22 +11,16 @@ const authenticateToken = (allowedRoles) => (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      console.log("Token invalid:", err.message);
-      return res.status(403).json({ message: "Token is not valid" });
-    }
-
-    // Debugging: Log role dan user data
-    console.log("User decoded from token:", user);
-
-    if (!allowedRoles.includes(user.role)) {
-      console.log("Role not allowed:", user.role);
+      console.error("Invalid token:", err);
       return res.status(403).json({ message: "Access denied" });
     }
 
-    req.userId = user.userId; // Menyimpan user ID dari token di `req`
-    req.role = user.role; // Menyimpan role di `req`
-    next(); // Melanjutkan ke fungsi berikutnya
+    console.log("Decoded Token:", user); // Tambahkan ini untuk debug
+    req.userId = user.userId;
+    req.role = user.role;
+    next();
   });
+
 };
 
 module.exports = authenticateToken;

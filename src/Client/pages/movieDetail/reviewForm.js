@@ -13,7 +13,6 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
     e.preventDefault();
     if (name && rating && comment) {
       const userId = parseInt(localStorage.getItem("userId")); // Ambil userId dari localStorage
-      // Pastikan userId ada (misalnya pengguna sudah login)
       if (!userId) {
         toast.error("Please log in to submit a review.");
         return;
@@ -28,8 +27,9 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
       const reviewData = {
         author: name,
         content: comment,
-        rating: rating * 2,
-        dramaId: dramaId,
+        rating: parseFloat((rating * 2).toFixed(1)), // Pastikan rating adalah float
+        dramaId: parseInt(dramaId), // Pastikan dramaId adalah integer
+        userId: userId,
       };
 
       try {
@@ -37,7 +37,7 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(reviewData),
         });
@@ -54,7 +54,7 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
             window.location.reload(); // Refresh halaman setelah submit berhasil
           }, 2500);
         } else {
-          toast.error("Failed to submit review.");
+          toast.error(`Failed to submit review: ${data.message || ""}`);
         }
       } catch (error) {
         console.error("Error submitting review:", error);
@@ -64,6 +64,7 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
       toast.warn("Please fill in all fields");
     }
   };
+
 
   const handleStarClick = (event, index) => {
     const rect = event.target.getBoundingClientRect();

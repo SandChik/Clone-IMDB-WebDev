@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 
-const Header = ({ isAuthenticated, userRole, handleLogout }) => {
-  const [query, setQuery] = useState("");
+const Header = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (query) {
-      navigate(`/search?q=${query}`);
-      setQuery("");
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setIsAuthenticated(true);
     }
+  }, []);
+
+  const handleLogout = () => {
+    // Hapus data autentikasi dari localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userId");
+    setIsAuthenticated(false);
+
+    // Redirect ke halaman login
+    navigate("/login");
   };
 
   return (
@@ -26,12 +35,11 @@ const Header = ({ isAuthenticated, userRole, handleLogout }) => {
         </Link>
       </div>
       <div className="headerRight">
-        <form onSubmit={handleSearch} className="search-bar">
+        <form className="search-bar">
           <input
             type="text"
             placeholder="Search movies..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {}}
           />
           <button type="submit">Search</button>
         </form>

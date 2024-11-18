@@ -28,6 +28,7 @@ const Comments = () => {
       const fetchedComments = response.data.map((review) => ({
         id: review.id,
         username: review.user.username,
+        author: review.author, // Tambahkan properti author di sini
         rate: review.rating / 2,
         drama: `[${review.drama.year}] ${review.drama.country} - ${review.drama.title}`,
         comment: review.content,
@@ -40,6 +41,7 @@ const Comments = () => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchComments();
@@ -155,30 +157,36 @@ const Comments = () => {
           >
             <TableHead>
               <TableRow>
-                {["", "Username", "Rate", "Drama", "Comments", "Status"].map(
-                  (head) => (
-                    <TableCell
-                      key={head}
-                      align={head === "" ? "left" : "left"}
-                      sx={{
-                        color: "#fff",
-                        bgcolor: "#1E90FF",
-                        fontWeight: "bold",
-                        fontSize: "1.1rem",
-                      }}
-                    >
-                      {head === "" ? (
-                        <Checkbox
-                          onChange={handleSelectAll}
-                          checked={selectedComments.length === comments.length}
-                          sx={{ color: "#fff" }}
-                        />
-                      ) : (
-                        head
-                      )}
-                    </TableCell>
-                  )
-                )}
+                {[
+                  "",
+                  "Username",
+                  "Author",
+                  "Rate",
+                  "Drama",
+                  "Comments",
+                  "Status",
+                ].map((head) => (
+                  <TableCell
+                    key={head}
+                    align={head === "" ? "left" : "left"}
+                    sx={{
+                      color: "#fff",
+                      bgcolor: "#1E90FF",
+                      fontWeight: "bold",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    {head === "" ? (
+                      <Checkbox
+                        onChange={handleSelectAll}
+                        checked={selectedComments.length === comments.length}
+                        sx={{ color: "#fff" }}
+                      />
+                    ) : (
+                      head
+                    )}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -198,6 +206,9 @@ const Comments = () => {
                     </TableCell>
                     <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
                       {comment.username}
+                    </TableCell>
+                    <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
+                      {comment.author}
                     </TableCell>
                     <TableCell sx={{ color: "#fff", bgcolor: "#2a2a2a" }}>
                       {comment.rate} / 5

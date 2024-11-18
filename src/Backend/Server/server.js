@@ -13,6 +13,7 @@ const dramaRoutes = require("./dramaRoutes");
 const authenticateToken = require("./authenticateToken");
 const reviewRoutes = require("./reviewRoutes");
 const validateApiAccess = require("../Middleware/validateApiAccess");
+const jwt = require("jsonwebtoken");
 
 const {
   addNewDrama,
@@ -114,12 +115,11 @@ app.get("/api/reviews/:dramaId", async (req, res) => {
 });
 
 // Route untuk menambahkan review baru
-app.post("/api/reviews", validateApiAccess(["USER"]), async (req, res) => {
+app.post("/api/reviews", authenticateToken([]), async (req, res) => {
   try {
     const { author, content, rating, dramaId } = req.body;
     const userId = req.userId; // Ambil userId dari middleware
 
-    // Pastikan semua data yang diperlukan ada
     if (!userId) {
       return res
         .status(400)

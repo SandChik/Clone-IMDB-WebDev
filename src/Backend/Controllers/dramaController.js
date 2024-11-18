@@ -146,29 +146,31 @@ const getReviewsByDramaId = async (dramaId) => {
 
 const addReview = async (reviewData) => {
   try {
-    console.log("Review Data:", reviewData); // Tambahkan ini
-    console.log("User ID:", reviewData.userId); // Tambahkan ini
-
-    if (!reviewData.userId) {
-      throw new Error("User ID is required to create a review.");
+    if (
+      !reviewData.userId ||
+      !reviewData.dramaId ||
+      !reviewData.author ||
+      !reviewData.content
+    ) {
+      throw new Error("Incomplete data provided for review.");
     }
 
     const newReview = await prisma.review.create({
       data: {
         author: reviewData.author,
         content: reviewData.content,
-        rating: reviewData.rating,
-        dramaId: reviewData.dramaId,
-        userId: reviewData.userId,
+        rating: parseFloat(reviewData.rating),
+        dramaId: parseInt(reviewData.dramaId),
+        userId: parseInt(reviewData.userId),
       },
     });
+
     return newReview;
   } catch (error) {
     console.error("Error creating review:", error);
     throw error;
   }
 };
-
 
 const approveDrama = async (req, res) => {
   const { id } = req.params;
