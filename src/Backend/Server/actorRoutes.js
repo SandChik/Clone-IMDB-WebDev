@@ -6,11 +6,13 @@ const {
   createActor,
   updateActor,
   deleteActor,
+  getActorById,
 } = require("../Controllers/actorController");
 
 router.get("/",validateApiAccess(["ADMIN", "USER"]), getAllActors);
 router.post("/", validateApiAccess(["ADMIN"]), createActor);
 router.put("/:id", validateApiAccess(["ADMIN"]), updateActor);
 router.delete("/:id", validateApiAccess(["ADMIN"]), deleteActor);
+router.get("/:id", getActorById); // Route untuk get actor by ID
 
 module.exports = router;

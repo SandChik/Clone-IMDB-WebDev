@@ -75,9 +75,29 @@ const deleteActor = async (req, res) => {
   }
 };
 
+const getActorById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const actor = await prisma.actor.findUnique({
+      where: { id: parseInt(id, 10) },
+    });
+
+    if (!actor) {
+      return res.status(404).json({ error: "Actor not found" });
+    }
+
+    res.json(actor);
+  } catch (error) {
+    console.error("Error fetching actor by ID:", error);
+    res.status(500).json({ error: "Failed to fetch actor" });
+  }
+};
+
 module.exports = {
   getAllActors,
   createActor,
   updateActor,
   deleteActor,
+  getActorById, // Tambahkan ke ekspor modul
 };

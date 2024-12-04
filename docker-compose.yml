@@ -1,0 +1,46 @@
+
+
+services:
+  drama_backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:rohiid123@postgres:5432/movie_db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    env_file:
+      - .env
+
+  drama_frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rohiid123
+      POSTGRES_DB: movie_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge

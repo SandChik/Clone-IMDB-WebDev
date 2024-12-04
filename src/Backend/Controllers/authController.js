@@ -1,10 +1,17 @@
 const prisma = require("../prismaClient");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // Fungsi untuk login user
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const body = req.body || {}; // Jika req.body undefined, gunakan objek kosong
+  const { email, password } = body;
+
+  // Validasi input
+  if (!email || !password) {
+    console.warn("Login attempt with missing email or password");
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
   try {
     // Cari user berdasarkan email
@@ -13,13 +20,15 @@ const loginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      console.warn(`Login failed: User not found for email ${email}`);
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Cek apakah password valid dengan bcrypt
+    // Cek apakah password valid
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
+      console.warn(`Login failed: Invalid password for email ${email}`);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -30,17 +39,19 @@ const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // Tambahkan userId ke respons JSON
+    console.info(`Login successful for user ID ${user.id}`);
+    // Kembalikan respons
     res.status(200).json({
       token: token,
       role: user.role,
-      userId: user.id, // Tambahkan userId di sini
+      userId: user.id,
     });
   } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ message: "Error logging in" });
+    console.error("Error during login process:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Fungsi register
 const registerUser = async (req, res) => {

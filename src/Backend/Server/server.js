@@ -2,8 +2,6 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const awardRoutes = require("./awardRoutes");
 const genreRoutes = require("./genreRoutes");
 const actorRoutes = require("./actorRoutes");
@@ -14,6 +12,9 @@ const authenticateToken = require("./authenticateToken");
 const reviewRoutes = require("./reviewRoutes");
 const validateApiAccess = require("../Middleware/validateApiAccess");
 const jwt = require("jsonwebtoken");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 
 const {
   addNewDrama,
@@ -42,6 +43,15 @@ app.use("/api", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/dramas", dramaRoutes);
 app.use("/api", reviewRoutes);
+
+app.get(
+  "/api/protected-route",
+  authenticateToken(["USER", "ADMIN"]),
+  (req, res) => {
+    res.status(200).json({ message: "Access granted" });
+  }
+);
+
 
 // Route untuk pencarian drama
 app.get("/api/dramas/search", async (req, res) => {
@@ -84,20 +94,21 @@ app.get("/api/dramas", async (req, res) => {
     const dramas = await getAllDramas();
     res.status(200).json(dramas);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching dramas:", error.message, error.stack);
     res.status(500).json({ message: "Error fetching dramas" });
   }
 });
+
 
 // Route untuk mendapatkan drama berdasarkan ID
 app.get("/api/dramas/:id", async (req, res) => {
   try {
     const dramaId = parseInt(req.params.id, 10); // Pastikan id diubah menjadi integer
     const dramaData = await getDramaById(dramaId);
-    res.status(200).json(dramaData);
+    res.status(200).json(dramaData).end();
   } catch (error) {
     console.error("Error fetching drama by ID:", error);
-    res.status(500).json({ message: "Error fetching drama by ID" });
+    res.status(404).json({ message: "Error fetching drama by ID" });
   }
 });
 
@@ -191,6 +202,12 @@ app.delete("/api/countries/:id", async (req, res) => {
 });
 
 // Jalankan server
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+}
+
+// Ekspor instance Express untuk digunakan di pengujian
+module.exports = app;
+

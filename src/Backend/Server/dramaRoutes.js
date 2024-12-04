@@ -11,8 +11,12 @@ router.post("/", validateApiAccess(["ADMIN"]), async (req, res) => {
     const newDrama = await addNewDrama(dramaData);
     res.status(201).json(newDrama);
   } catch (error) {
-    console.error("Error adding drama:", error);
-    res.status(500).json({ error: "Failed to add drama" });
+    if (error.message.startsWith("Validation error")) {
+      res.status(400).json({ message: error.message }); // Berikan respon 400
+    } else {
+      console.error("Error adding drama:", error);
+      res.status(400).json({ message: "Failed to add drama" });
+    }
   }
 });
 
