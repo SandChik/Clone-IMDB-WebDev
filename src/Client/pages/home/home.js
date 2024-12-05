@@ -11,7 +11,7 @@ const Home = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/dramas");
+        const response = await fetch("http://localhost:7001/api/dramas");
         const data = await response.json();
         console.log("Data diterima:", data); // Debug data
         setPopularMovies(data);

@@ -33,7 +33,7 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
       };
 
       try {
-        const res = await fetch("http://localhost:5000/api/reviews", {
+        const res = await fetch("http://localhost:7001/api/reviews", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -64,7 +64,6 @@ const ReviewForm = ({ dramaId, onReviewSubmit }) => {
       toast.warn("Please fill in all fields");
     }
   };
-
 
   const handleStarClick = (event, index) => {
     const rect = event.target.getBoundingClientRect();

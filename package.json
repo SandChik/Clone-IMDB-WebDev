@@ -38,7 +38,8 @@
     "eject": "react-scripts eject",
     "db:reset": "node src/admin/utils/resetDb.js",
     "test:coverage": "jest --coverage",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "start:backend": "nodemon src/Backend/Server/server.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

@@ -31,7 +31,7 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "http://localhost:7001/api/auth/login",
         {
           email,
           password,
@@ -43,7 +43,7 @@ const Login = ({ setIsAuthenticated, setUserRole }) => {
       localStorage.setItem("role", role);
       localStorage.setItem("userId", userId);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      
+
       setIsAuthenticated(true);
       setUserRole(role);
 

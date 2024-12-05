@@ -7,7 +7,7 @@ const ReviewCard = ({ dramaId }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/reviews/${dramaId}`);
+        const res = await fetch(`http://localhost:7001/api/reviews/${dramaId}`);
         const data = await res.json();
         setReviews(data);
       } catch (error) {

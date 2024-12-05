@@ -15,15 +15,14 @@ const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-
 const {
   addNewDrama,
   getAllDramas,
   getDramaById,
   getReviewsByDramaId,
   addReview,
-  approveDrama, 
-  deleteDrama, 
+  approveDrama,
+  deleteDrama,
   getAllCountries,
   addCountry,
   deleteCountry,
@@ -32,9 +31,31 @@ const {
 } = require("../Controllers/dramaController");
 
 const app = express();
-const port = 5000;
+const port = 7001;
+const allowedOrigins = [
+  "http://localhost", // React app 1 URL
+  "http://localhost:3000", // React app 1 URL
+  "http://localhost:3002", // React app 2 URL
+  "http://localhost:3008", // React app 2 URL
+  "http://localhost:3009", // React app 2 URL
+  "http://localhost:7000", // React app 2 URL
+  "http://localhost:7001", // React app 2 URL
+  "http://145.223.23.30:7000",
+  "http://145.223.23.30:7001",
 
-app.use(cors());
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Check if the incoming request origin is in the allowedOrigins array
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Izinkan pengiriman cookie lintas domain
+  methods: ["GET", "POST", "PUT", "DELETE"], // Izinkan metode HTTP yang digunakan
+}));
 app.use(bodyParser.json());
 app.use(awardRoutes);
 app.use("/api", genreRoutes);
@@ -44,6 +65,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dramas", dramaRoutes);
 app.use("/api", reviewRoutes);
 
+// hello world
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 app.get(
   "/api/protected-route",
   authenticateToken(["USER", "ADMIN"]),
@@ -51,7 +77,6 @@ app.get(
     res.status(200).json({ message: "Access granted" });
   }
 );
-
 
 // Route untuk pencarian drama
 app.get("/api/dramas/search", async (req, res) => {
@@ -78,7 +103,7 @@ app.put("/:id", async (req, res) => {
 });
 
 // Route untuk menambahkan drama
-app.post("/api/dramas",validateApiAccess(["ADMIN"]), async (req, res) => {
+app.post("/api/dramas", validateApiAccess(["ADMIN"]), async (req, res) => {
   try {
     const newDrama = await addNewDrama(req.body);
     res.status(201).json(newDrama);
@@ -99,7 +124,6 @@ app.get("/api/dramas", async (req, res) => {
   }
 });
 
-
 // Route untuk mendapatkan drama berdasarkan ID
 app.get("/api/dramas/:id", async (req, res) => {
   try {
@@ -111,7 +135,6 @@ app.get("/api/dramas/:id", async (req, res) => {
     res.status(404).json({ message: "Error fetching drama by ID" });
   }
 });
-
 
 // Route untuk mendapatkan review berdasarkan dramaId
 app.get("/api/reviews/:dramaId", async (req, res) => {
@@ -153,18 +176,26 @@ app.post("/api/reviews", authenticateToken([]), async (req, res) => {
 });
 
 // Route untuk approve drama
-app.patch("/api/dramas/:id/approve",validateApiAccess(["ADMIN"]), approveDrama);
+app.patch(
+  "/api/dramas/:id/approve",
+  validateApiAccess(["ADMIN"]),
+  approveDrama
+);
 
 // Route untuk delete drama
-app.delete("/api/dramas/:id",validateApiAccess(["ADMIN"]), async (req, res) => {
-  try {
-    await deleteDrama(req.params.id);
-    res.json({ message: "Drama deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting drama:", error);
-    res.status(500).json({ message: "Error deleting drama" });
+app.delete(
+  "/api/dramas/:id",
+  validateApiAccess(["ADMIN"]),
+  async (req, res) => {
+    try {
+      await deleteDrama(req.params.id);
+      res.json({ message: "Drama deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting drama:", error);
+      res.status(500).json({ message: "Error deleting drama" });
+    }
   }
-});
+);
 
 // Route untuk mendapatkan semua countries
 app.get("/api/countries", async (req, res) => {
@@ -210,4 +241,3 @@ if (process.env.NODE_ENV !== "test") {
 
 // Ekspor instance Express untuk digunakan di pengujian
 module.exports = app;
-

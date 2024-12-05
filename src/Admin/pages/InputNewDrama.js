@@ -39,13 +39,13 @@ const InputNewDrama = () => {
     const fetchData = async () => {
       try {
         const countryResponse = await axios.get(
-          "http://localhost:5000/api/countries"
+          "http://localhost:7001/api/countries"
         );
         const genreResponse = await axios.get(
-          "http://localhost:5000/api/genres"
+          "http://localhost:7001/api/genres"
         );
         const actorResponse = await axios.get(
-          "http://localhost:5000/api/actors"
+          "http://localhost:7001/api/actors"
         );
 
         setCountries(countryResponse.data);
@@ -127,7 +127,7 @@ const InputNewDrama = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/dramas", {
+      await axios.post("http://localhost:7001/api/dramas", {
         ...dramaData,
         rating: parseFloat(dramaData.rating),
         duration: parseInt(dramaData.duration),

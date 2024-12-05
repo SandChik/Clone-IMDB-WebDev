@@ -16,7 +16,7 @@ const Movie = () => {
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/dramas/${id}`);
+        const res = await fetch(`http://localhost:7001/api/dramas/${id}`);
         if (!res.ok) throw new Error("Failed to fetch movie details");
         const data = await res.json();
         setMovie(data);
@@ -131,9 +131,9 @@ const Movie = () => {
                   {currentMovieDetail.year}
                 </span>
                 {currentMovieDetail && currentMovieDetail.country && (
-                <span className="movie__country">
-                  {currentMovieDetail.country.name}
-                </span>
+                  <span className="movie__country">
+                    {currentMovieDetail.country.name}
+                  </span>
                 )}
               </div>
               <div className="movie__genres">

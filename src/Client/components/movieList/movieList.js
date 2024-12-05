@@ -8,7 +8,7 @@ const MovieList = () => {
   // Fungsi untuk mengambil data drama dari database
   const fetchMovieList = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/dramas");
+      const res = await fetch("http://localhost:7001/api/dramas");
       const data = await res.json();
       setMovieList(data); // Memperbarui state dengan data yang diperoleh
     } catch (error) {

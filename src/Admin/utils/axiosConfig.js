@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL untuk semua request
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "http://localhost:7001";
 
 // Tambahkan token dari localStorage secara otomatis
 axios.interceptors.request.use(

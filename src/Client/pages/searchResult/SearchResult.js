@@ -19,7 +19,7 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/genres");
+        const response = await axios.get("http://localhost:7001/api/genres");
         setGenres(response.data);
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -32,7 +32,7 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/countries");
+        const response = await axios.get("http://localhost:7001/api/countries");
         setCountries(response.data);
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -55,7 +55,7 @@ const SearchResults = () => {
         });
 
         const response = await axios.get(
-          "http://localhost:5000/api/dramas/search",
+          "http://localhost:7001/api/dramas/search",
           {
             params: {
               name: query || "",
@@ -131,7 +131,7 @@ const SearchResults = () => {
                 {country.name}
               </option>
             ))}
-          </select> 
+          </select>
         </div>
       </header>
 
@@ -151,4 +151,3 @@ const SearchResults = () => {
 };
 
 export default SearchResults;
-  
