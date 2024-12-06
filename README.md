@@ -54,7 +54,7 @@ docker build -t clone-imdb-webdev .
 #### Run the container:
 docker run -p 3000:3000 clone-imdb-webdev
 
-## Screanshot
+## Screenshot
 ### Home Page
 ![Home Page](https://github.com/user-attachments/assets/84a49206-3cc7-41fb-ab03-f0aea9b94340)
 
